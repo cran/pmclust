@@ -1,0 +1,12 @@
+citHeader("To cite pmclust in a publication use:")
+
+citEntry(
+  entry = "Manual",
+  title = "Parallel Model-Based Clustering",
+  author = personList(as.person("W.-C. Chen"), as.person("G. Ostrouchov")),
+  organization = "Oak Ridge National Laboratory",
+  address = "Oak Ridge, TN, USA",
+  year = "2012",
+  url = "http://thirteen-01.stat.iastate.edu/snoweye/hpsc/",
+  textVersion = "W.-C. Chen, G. Ostrouchov (2012). Parallel Model-Based Clustering for Finite Mixture Gaussian Models."
+)
