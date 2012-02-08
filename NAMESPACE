@@ -1,0 +1,41 @@
+useDynLib(pmclust)
+
+export(
+  ### Readme function.
+  "readme",
+
+  ### Global objects.
+  "set.global",
+
+  ### Initial functions.
+  "initial.em.worker",
+  "initial.RndEM.worker",
+  "assign.N.sample",
+  "initial.center.worker",
+
+  ### EM methods.
+  "em.step.worker",
+  "aecm.step.worker",
+  "apecm1.step.worker",
+  "apecm2.step.worker",
+  "em.update.class.worker",
+  
+  ### EM utility functions
+  "e.step.worker",
+  "m.step.worker",
+  "indep.logL",
+
+  ### K-means.
+  "kmeans.step.worker",
+  "kmeans.update.class.worker",
+
+  ### Example functions
+  "generate.basic.worker",
+
+  ### Utility functions
+  "get.N.CLASS",
+  "mb.print",
+  "catmpi",
+  "printmpi"
+)
+
