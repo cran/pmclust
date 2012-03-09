@@ -1,59 +1,59 @@
 ### This file contains major functions for EM iterations.
 
 ### E-step.
-e.step.worker <- function(PARAM, update.logL = TRUE){
+e.step.spmd <- function(PARAM, update.logL = TRUE){
   for(i.k in 1:PARAM$K){
     logdmvnorm(PARAM, i.k)
   }
 
   update.expectation(PARAM, update.logL = update.logL)
-} # End of e.step.worker().
+} # End of e.step.spmd().
 
 ### z_nk / sum_k z_n might have numerical problems if z_nk all underflowed.
 update.expectation <- function(PARAM, update.logL = TRUE){
-  N <- nrow(X.worker)
+  N <- nrow(X.spmd)
   K <- PARAM$K
 
-  U.worker <<- W.plus.y(W.worker, PARAM$log.ETA, N, K)
-  Z.worker <<- exp(U.worker)
+  U.spmd <<- W.plus.y(W.spmd, PARAM$log.ETA, N, K)
+  Z.spmd <<- exp(U.spmd)
 
-  tmp.id <- rowSums(U.worker < CONTROL$exp.min) == K |
-            rowSums(U.worker > CONTROL$exp.max) > 0
+  tmp.id <- rowSums(U.spmd < CONTROL$exp.min) == K |
+            rowSums(U.spmd > CONTROL$exp.max) > 0
 
   tmp.flag <- sum(tmp.id)
   if(tmp.flag > 0){
-    tmp.worker <- U.worker[tmp.id,]
+    tmp.spmd <- U.spmd[tmp.id,]
 
     if(tmp.flag == 1){
-      tmp.scale <- max(tmp.worker) - CONTROL$exp.max / K
+      tmp.scale <- max(tmp.spmd) - CONTROL$exp.max / K
     } else{
-      tmp.scale <- apply(tmp.worker, 1, max) - CONTROL$exp.max / K
+      tmp.scale <- apply(tmp.spmd, 1, max) - CONTROL$exp.max / K
     }
-    Z.worker[tmp.id,] <<- exp(tmp.worker - tmp.scale)
+    Z.spmd[tmp.id,] <<- exp(tmp.spmd - tmp.scale)
   }
 
-  W.worker.rowSums <<- rowSums(Z.worker)
-  Z.worker <<- Z.worker / W.worker.rowSums
+  W.spmd.rowSums <<- rowSums(Z.spmd)
+  Z.spmd <<- Z.spmd / W.spmd.rowSums
 
   ### For semi-supervised clustering.
   # if(SS.clustering){
-  #   Z.worker[SS.id.worker,] <<- SS.Z.worker
+  #   Z.spmd[SS.id.spmd,] <<- SS.Z.spmd
   # }
 
-  Z.colSums <<- colSums(Z.worker)
+  Z.colSums <<- colSums(Z.spmd)
   Z.colSums <<- mpi.allreduce(Z.colSums, type = 2, op = "sum")
 
   if(update.logL){
-    W.worker.rowSums <<- log(W.worker.rowSums)
+    W.spmd.rowSums <<- log(W.spmd.rowSums)
     if(tmp.flag){
-      W.worker.rowSums[tmp.id] <<- W.worker.rowSums[tmp.id] + tmp.scale
+      W.spmd.rowSums[tmp.id] <<- W.spmd.rowSums[tmp.id] + tmp.scale
     }
   }
 } # End of update.expectation().
 
 
 ### M-step.
-m.step.worker <- function(PARAM){
+m.step.spmd <- function(PARAM){
   ### MLE For ETA
   PARAM$ETA <- Z.colSums / sum(Z.colSums)
   PARAM$log.ETA <- log(PARAM$ETA)
@@ -61,14 +61,14 @@ m.step.worker <- function(PARAM){
   p <- PARAM$p
   for(i.k in 1:PARAM$K){
     ### MLE for MU
-    tmp.MU <- colSums(X.worker * Z.worker[, i.k]) / Z.colSums[i.k]
+    tmp.MU <- colSums(X.spmd * Z.spmd[, i.k]) / Z.colSums[i.k]
     PARAM$MU[, i.k] <- mpi.allreduce(tmp.MU, type = 2, op = "sum")
 
     ### MLE for SIGMA
     if(PARAM$U.check[[i.k]]){
-      B <- W.plus.y(X.worker, -PARAM$MU[, i.k],
-                    nrow(X.worker), ncol(X.worker)) *
-           sqrt(Z.worker[, i.k] / Z.colSums[i.k])
+      B <- W.plus.y(X.spmd, -PARAM$MU[, i.k],
+                    nrow(X.spmd), ncol(X.spmd)) *
+           sqrt(Z.spmd[, i.k] / Z.colSums[i.k])
       tmp.SIGMA <- crossprod(B)
       tmp.SIGMA <- mpi.allreduce(tmp.SIGMA, type = 2, op = "sum") 
       dim(tmp.SIGMA) <- c(p, p)
@@ -87,12 +87,12 @@ m.step.worker <- function(PARAM){
   }
 
   PARAM
-} # End of m.step.worker().
+} # End of m.step.spmd().
 
 
 ### log likelihood.
 logL.step <- function(){
-  tmp.logL <- sum(W.worker.rowSums)
+  tmp.logL <- sum(W.spmd.rowSums)
   mpi.allreduce(tmp.logL, type = 2, op = "sum")
 } # End of logL.step().
 
@@ -127,7 +127,7 @@ check.em.convergence <- function(PARAM.org, PARAM.new, i.iter){
 
 
 ### EM-step.
-em.step.worker <- function(PARAM.org){
+em.step.spmd <- function(PARAM.org){
   CHECK <<- list(method = "em", i.iter = 0, abs.err = Inf, rel.err = Inf,
                  convergence = 0)
   i.iter <- 1
@@ -138,7 +138,7 @@ em.step.worker <- function(PARAM.org){
     if(! exists("SAVE.iter", envir = .GlobalEnv)){
       SAVE.param <<- NULL
       SAVE.iter <<- NULL
-      CLASS.iter.org <<- unlist(apply(Z.worker, 1, which.max))
+      CLASS.iter.org <<- unlist(apply(Z.spmd, 1, which.max))
     }
   }
 
@@ -148,7 +148,7 @@ em.step.worker <- function(PARAM.org){
       time.start <- proc.time()
     }
 
-    PARAM.new <- try(em.onestep.worker(PARAM.org))
+    PARAM.new <- try(em.onestep.spmd(PARAM.org))
     if(class(PARAM.new) == "try-error"){
       catmpi("Results of previous iterations are returned.\n")
       CHECK$convergence <<- 99
@@ -166,7 +166,7 @@ em.step.worker <- function(PARAM.org){
       tmp.time <- proc.time() - time.start
 
       SAVE.param <<- c(SAVE.param, PARAM.new)
-      CLASS.iter.new <- unlist(apply(Z.worker, 1, which.max))
+      CLASS.iter.new <- unlist(apply(Z.spmd, 1, which.max))
       tmp <- as.double(sum(CLASS.iter.new != CLASS.iter.org))
       tmp <- mpi.allreduce(tmp, type = 2, op = "sum")
       tmp.all <- c(tmp / PARAM$N, PARAM.new$logL,
@@ -181,15 +181,15 @@ em.step.worker <- function(PARAM.org){
   }
 
   PARAM.new
-} # End of em.step.worker().
+} # End of em.step.spmd().
 
-em.onestep.worker <- function(PARAM){
+em.onestep.spmd <- function(PARAM){
 #  if(COMM.RANK == 0){
 #    Rprof(filename = "em.Rprof", append = TRUE)
 #  }
 
-  PARAM <- m.step.worker(PARAM)
-  e.step.worker(PARAM)
+  PARAM <- m.step.spmd(PARAM)
+  e.step.spmd(PARAM)
 
 #  if(COMM.RANK == 0){
 #    Rprof(NULL)
@@ -211,11 +211,11 @@ em.onestep.worker <- function(PARAM){
   }
 
   PARAM
-} # End of em.onestep.worker().
+} # End of em.onestep.spmd().
 
 
 ### Obtain classifications.
-em.update.class.worker <- function(){
-  CLASS.worker <<- unlist(apply(Z.worker, 1, which.max))
-} # End of em.update.class.worker().
+em.update.class.spmd <- function(){
+  CLASS.spmd <<- unlist(apply(Z.spmd, 1, which.max))
+} # End of em.update.class.spmd().
 

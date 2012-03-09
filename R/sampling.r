@@ -1,64 +1,64 @@
 
-### Assign sample size to all N.worker and N.allworkers.
-# assign.N.sample <- function(total.sample = 5000, N.org.worker,
-#     var.table.worker = NULL){
-assign.N.sample <- function(total.sample = 5000, N.org.worker){
-  N.new.worker <- N.org.worker
+### Assign sample size to all N.spmd and N.allspmds.
+# assign.N.sample <- function(total.sample = 5000, N.org.spmd,
+#     var.table.spmd = NULL){
+assign.N.sample <- function(total.sample = 5000, N.org.spmd){
+  N.new.spmd <- N.org.spmd
 
   ### Check for SS.
-  # if(!is.null(var.table.worker)){
-  #   N.new.worker <- N.new.worker - nrow(var.table.worker)
-  #   var.table.worker <- var.table.worker[order(var.table.worker$id),]
+  # if(!is.null(var.table.spmd)){
+  #   N.new.spmd <- N.new.spmd - nrow(var.table.spmd)
+  #   var.table.spmd <- var.table.spmd[order(var.table.spmd$id),]
   # }
   my.size <- mpi.comm.size()
-  N.org.allworkers <- mpi.allgather(as.integer(N.org.worker), type = 1,
+  N.org.allspmds <- mpi.allgather(as.integer(N.org.spmd), type = 1,
                                     integer(my.size))
-  N.new.allworkers <- mpi.allgather(as.integer(N.new.worker), type = 1,
+  N.new.allspmds <- mpi.allgather(as.integer(N.new.spmd), type = 1,
                                     integer(my.size))
-  if(any(N.new.allworkers <= 0)){
-    stop("N.org.worker is too small.")
+  if(any(N.new.allspmds <= 0)){
+    stop("N.org.spmd is too small.")
   }
 
   ### Sampling start.
-  if(any(N.new.allworkers < total.sample / my.size)){
-    N.sample.worker <- N.org.worker
-    N.sample.allworkers <- N.org.allworkers
-    ID.sample.worker <- 1:N.org.worker
+  if(any(N.new.allspmds < total.sample / my.size)){
+    N.sample.spmd <- N.org.spmd
+    N.sample.allspmds <- N.org.allspmds
+    ID.sample.spmd <- 1:N.org.spmd
 
     ### Check for SS.
-    # if(!is.null(var.table.worker)){
-    #   var.table.worker$id.sample <-
-    #     which(ID.sample.worker %in% var.table.worker$id)
+    # if(!is.null(var.table.spmd)){
+    #   var.table.spmd$id.sample <-
+    #     which(ID.sample.spmd %in% var.table.spmd$id)
     # }
   } else{
-    N.sample.allworkers <- floor(N.org.allworkers / sum(N.org.allworkers) *
+    N.sample.allspmds <- floor(N.org.allspmds / sum(N.org.allspmds) *
                                  total.sample)
-    remainder <- total.sample - sum(N.sample.allworkers)
+    remainder <- total.sample - sum(N.sample.allspmds)
     if(remainder > 0){
-      N.sample.allworkers[(my.size - remainder + 1):my.size] <-
-        N.sample.allworkers[(my.size - remainder + 1):my.size] + 1 
+      N.sample.allspmds[(my.size - remainder + 1):my.size] <-
+        N.sample.allspmds[(my.size - remainder + 1):my.size] + 1 
     }
 
-    N.sample.worker <- N.sample.allworkers[mpi.comm.rank() + 1]
+    N.sample.spmd <- N.sample.allspmds[mpi.comm.rank() + 1]
 
     ### Check for SS.
-    # if(!is.null(var.table.worker)){
-    #   ID.sample.worker <- sample((1:N.org.worker)[-var.table.worker$id],
-    #                              N.sample.worker)
-    #   ID.sample.worker <- sort(c(var.table.worker$id, ID.sample.worker))
+    # if(!is.null(var.table.spmd)){
+    #   ID.sample.spmd <- sample((1:N.org.spmd)[-var.table.spmd$id],
+    #                              N.sample.spmd)
+    #   ID.sample.spmd <- sort(c(var.table.spmd$id, ID.sample.spmd))
 
-    #   var.table.worker$id.sample <-
-    #     which(ID.sample.worker %in% var.table.worker$id)
+    #   var.table.spmd$id.sample <-
+    #     which(ID.sample.spmd %in% var.table.spmd$id)
     # } else{
-      ID.sample.worker <- sort(sample(1:N.org.worker, N.sample.worker))
+      ID.sample.spmd <- sort(sample(1:N.org.spmd, N.sample.spmd))
     # }
   }
 
-  N.sample <- sum(N.sample.allworkers)
+  N.sample <- sum(N.sample.allspmds)
 
-  list(N = N.sample, N.worker = N.sample.worker,
-       N.allworkers = N.sample.allworkers,
-       ID.worker = ID.sample.worker)
-#       SS.table.worker = var.table.worker)
+  list(N = N.sample, N.spmd = N.sample.spmd,
+       N.allspmds = N.sample.allspmds,
+       ID.spmd = ID.sample.spmd)
+#       SS.table.spmd = var.table.spmd)
 } # End of assign.N.sample().
 

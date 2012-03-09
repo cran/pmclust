@@ -1,26 +1,26 @@
-\name{em.step.worker}
-\alias{em.step.worker}
-\title{EM steps for workers}
+\name{em.step.spmd}
+\alias{em.step.spmd}
+\title{EM Steps for SPMD}
 \description{
   The EM algorithm for model-based clustering of finite mixture Gaussian
   models with unstructured dispersions.
 }
 \usage{
-  em.step.worker(PARAM.org)
+  em.step.spmd(PARAM.org)
 }
 \arguments{
   \item{PARAM.org}{an original set of parameters generated
                    by \code{\link{set.global}}.}
 }
 \details{
-  A global variable called \code{\link{X.worker}} should exist in the
+  A global variable called \code{\link{X.spmd}} should exist in the
   \code{\link[base]{.GlobalEnv}}
-  environment, usually the working environment. The \code{\link{X.worker}}
+  environment, usually the working environment. The \code{\link{X.spmd}}
   is the data matrix to be clustered, and this matrix has a dimension
-  \code{N.worker} by \code{p}.
+  \code{N.spmd} by \code{p}.
 
   A \code{PARAM.org} will be a local variable inside
-  \code{\link{em.step.worker}},
+  \code{\link{em.step.spmd}},
   and this variable is a list containing all parameters related to models.
   This function also updates in the parameters by the EM algorithm, and
   return the convergent results. The details of list elements are initially
@@ -47,9 +47,9 @@
 \seealso{
   \code{\link{set.global}},
   \code{\link{mb.print}},
-  \code{\link{aecm.step.worker}},
-  \code{\link{apecm1.step.worker}}, \cr
-  \code{\link{apecm2.step.worker}}.
+  \code{\link{aecm.step.spmd}},
+  \code{\link{apecm1.step.spmd}}, \cr
+  \code{\link{apecm2.step.spmd}}.
 }
 \examples{
 \dontrun{
@@ -62,23 +62,23 @@ library(pmclust)
 invisible(mpi.comm.dup(0, 1))
 
 ### Generate an example data.
-N.allworkers <- rep(5000, mpi.comm.size())
-N.worker <- 5000
-N.K.worker <- c(2000, 3000)
+N.allspmds <- rep(5000, mpi.comm.size())
+N.spmd <- 5000
+N.K.spmd <- c(2000, 3000)
 N <- 5000 * mpi.comm.size()
 p <- 2
 K <- 2
 seed <- 123 + mpi.comm.rank()
-data.worker <- generate.basic.worker(N.allworkers, N.worker, N.K.worker,
+data.spmd <- generate.basic.spmd(N.allspmds, N.spmd, N.K.spmd,
                                      N, p, K, seed)
-X.worker <- data.worker$X.worker
+X.spmd <- data.spmd$X.spmd
 
 ### Run clustering.
 PARAM.org <- set.global(K = K)
-# PARAM.org <- initial.em.worker(PARAM.org)
-PARAM.org <- initial.RandEM.worker(PARAM.org)
-PARAM.new <- em.step.worker(PARAM.org)
-em.update.class.worker()
+# PARAM.org <- initial.em.spmd(PARAM.org)
+PARAM.org <- initial.RandEM.spmd(PARAM.org)
+PARAM.new <- em.step.spmd(PARAM.org)
+em.update.class.spmd()
 mb.print(PARAM.new, CHECK)
 
 ### Get results.

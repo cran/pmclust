@@ -1,18 +1,18 @@
 \name{.0.readme}
 \alias{readme}
 \alias{CHECK}
-\alias{CLASS.worker}
+\alias{CLASS.spmd}
 \alias{COMM.RANK}
 \alias{COMM.SIZE}
 \alias{SAVE.param}
 \alias{SAVE.iter}
-\alias{U.worker}
-\alias{W.worker}
-\alias{W.worker.rowSums}
+\alias{U.spmd}
+\alias{W.spmd}
+\alias{W.spmd.rowSums}
 \alias{Z.colSums}
-\alias{Z.worker}
+\alias{Z.spmd}
 \alias{p.times.logtwopi}
-\title{Read me first function}
+\title{Read Me First Function}
 \description{
   This function print the annotations of all variables used in this package.
 }
@@ -28,8 +28,8 @@
   A readme message will print on screen by default and explain the global
   variables used in this package, including:
 \tabular{ll}{\code{CHECK}            \tab convergent checking \cr
-             \code{CLASS.worker}     \tab true id of each data, a vector of
-                                          length N.worker and has values
+             \code{CLASS.spmd}       \tab true id of each data, a vector of
+                                          length N.spmd and has values
                                           from 1 to K \cr
              \code{COMM.RANK}        \tab rank of current processor, obtained
                                           from
@@ -37,7 +37,7 @@
              \code{COMM.SIZE}        \tab total processors in MPI world,
                                           obtained from
                                           \code{\link[Rmpi]{mpi.comm.size}}\cr
-             \code{\link{CONTROL}}  \tab controls for EM iterations \cr
+             \code{\link{CONTROL}}   \tab controls for EM iterations \cr
              \code{\link{PARAM}}     \tab set or parameters \cr
              \code{SAVE.param}       \tab (debug only)
                                           save parameters for every
@@ -45,17 +45,17 @@
              \code{SAVE.iter}        \tab (debug only)
                                           save computing time for every
                                           iterations \cr
-             \code{U.worker}         \tab temporary storage for density \cr
-             \code{W.worker}         \tab temporary storage for
+             \code{U.spmd}           \tab temporary storage for density \cr
+             \code{W.spmd}           \tab temporary storage for
                                           \code{eta * density} \cr
-             \code{W.worker.rowSums} \tab temporary storage for rowSums
-                                          of \code{W.worker} \cr
-             \code{\link{X.worker}}  \tab generated data set with dimension
+             \code{W.spmd.rowSums}   \tab temporary storage for rowSums
+                                          of \code{W.spmd} \cr
+             \code{\link{X.spmd}}    \tab generated data set with dimension
                                           with dimension
-                                          \code{N.worker * p} \cr
+                                          \code{N.spmd * p} \cr
              \code{Z.colSums}        \tab temporary storage for rowSums
-                                          of \code{Z.worker} \cr
-             \code{Z.worker}         \tab posterior probabilities \cr
+                                          of \code{Z.spmd} \cr
+             \code{Z.spmd}           \tab posterior probabilities \cr
              \code{p.times.logtwopi} \tab \code{p * log(2 * pi)}
 }
   Each variable may contain several elements if it is a list, some variables

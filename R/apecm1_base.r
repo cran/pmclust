@@ -1,101 +1,101 @@
 ### This file contains major functions for EM iterations.
 
 ### E-step.
-ape1.step.worker <- function(PARAM){
+ape1.step.spmd <- function(PARAM){
   for(i.k in 1:PARAM$K){
     logdmvnorm(PARAM, i.k)
   }
 
   ape1.update.expectation(PARAM)
-} # End of ape1.step.worker().
+} # End of ape1.step.spmd().
 
-ape1.step.worker.k <- function(PARAM, i.k, update.logL = TRUE){
+ape1.step.spmd.k <- function(PARAM, i.k, update.logL = TRUE){
   logdmvnorm(PARAM, i.k)
   ape1.update.expectation.k(PARAM, i.k, update.logL)
-} # End of ape1.step.worker.k().
+} # End of ape1.step.spmd.k().
 
 
 ### z_nk / sum_k z_n might have numerical problems if z_nk all underflowed.
 ape1.update.expectation <- function(PARAM, update.logL = TRUE){
-  N <- nrow(X.worker)
+  N <- nrow(X.spmd)
   K <- PARAM$K
 
-  W.worker <<- W.plus.y(W.worker, PARAM$log.ETA, N, K)
-  U.worker <<- exp(W.worker)
-  Z.worker <<- U.worker
+  W.spmd <<- W.plus.y(W.spmd, PARAM$log.ETA, N, K)
+  U.spmd <<- exp(W.spmd)
+  Z.spmd <<- U.spmd
 
-  tmp.id <- rowSums(W.worker < CONTROL$exp.min) == K |
-            rowSums(W.worker > CONTROL$exp.max) > 0
+  tmp.id <- rowSums(W.spmd < CONTROL$exp.min) == K |
+            rowSums(W.spmd > CONTROL$exp.max) > 0
 
   tmp.flag <- sum(tmp.id)
   if(tmp.flag > 0){
-    tmp.worker <- W.worker[tmp.id,]
+    tmp.spmd <- W.spmd[tmp.id,]
 
     if(tmp.flag == 1){
-      tmp.scale <- max(tmp.worker) - CONTROL$exp.max / K
+      tmp.scale <- max(tmp.spmd) - CONTROL$exp.max / K
     } else{
-      tmp.scale <- apply(tmp.worker, 1, max) - CONTROL$exp.max / K
+      tmp.scale <- apply(tmp.spmd, 1, max) - CONTROL$exp.max / K
     }
-    Z.worker[tmp.id,] <<- exp(tmp.worker - tmp.scale)
+    Z.spmd[tmp.id,] <<- exp(tmp.spmd - tmp.scale)
   }
 
-  W.worker.rowSums <<- rowSums(Z.worker)
-  Z.worker <<- Z.worker / W.worker.rowSums
+  W.spmd.rowSums <<- rowSums(Z.spmd)
+  Z.spmd <<- Z.spmd / W.spmd.rowSums
 
   ### For semi-supervised clustering.
   # if(SS.clustering){
-  #   Z.worker[SS.id.worker,] <<- SS.Z.worker
+  #   Z.spmd[SS.id.spmd,] <<- SS.Z.spmd
   # }
 
-  Z.colSums <<- colSums(Z.worker)
+  Z.colSums <<- colSums(Z.spmd)
   Z.colSums <<- mpi.allreduce(Z.colSums, type = 2, op = "sum")
 } # End of update.expectation().
 
 ape1.update.expectation.k <- function(PARAM, i.k, update.logL = TRUE){
-  N <- nrow(X.worker)
+  N <- nrow(X.spmd)
   K <- PARAM$K
 
-  W.worker[, i.k] <<- W.plus.y.k(W.worker, PARAM$log.ETA, N, K, i.k)
-  U.worker[, i.k] <<- exp(W.worker[, i.k])
-  Z.worker <<- U.worker
+  W.spmd[, i.k] <<- W.plus.y.k(W.spmd, PARAM$log.ETA, N, K, i.k)
+  U.spmd[, i.k] <<- exp(W.spmd[, i.k])
+  Z.spmd <<- U.spmd
 
-  tmp.id <- rowSums(W.worker < CONTROL$exp.min) == K |
-            rowSums(W.worker > CONTROL$exp.max) > 0
+  tmp.id <- rowSums(W.spmd < CONTROL$exp.min) == K |
+            rowSums(W.spmd > CONTROL$exp.max) > 0
 
   tmp.flag <- sum(tmp.id)
   if(tmp.flag > 0){
-    tmp.worker <- W.worker[tmp.id,]
+    tmp.spmd <- W.spmd[tmp.id,]
 
     if(tmp.flag == 1){
-      tmp.scale <- max(tmp.worker) - CONTROL$exp.max / K
+      tmp.scale <- max(tmp.spmd) - CONTROL$exp.max / K
     } else{
-      tmp.scale <- apply(tmp.worker, 1, max) - CONTROL$exp.max / K
+      tmp.scale <- apply(tmp.spmd, 1, max) - CONTROL$exp.max / K
     }
-    Z.worker[tmp.id,] <<- exp(tmp.worker - tmp.scale)
+    Z.spmd[tmp.id,] <<- exp(tmp.spmd - tmp.scale)
   }
 
-  W.worker.rowSums <<- rowSums(Z.worker)
-  Z.worker <<- Z.worker / W.worker.rowSums
+  W.spmd.rowSums <<- rowSums(Z.spmd)
+  Z.spmd <<- Z.spmd / W.spmd.rowSums
 
   ### For semi-supervised clustering.
   # if(SS.clustering){
-  #   Z.worker[SS.id.worker,] <<- SS.Z.worker
+  #   Z.spmd[SS.id.spmd,] <<- SS.Z.spmd
   # }
 
-  Z.colSums <<- colSums(Z.worker)
+  Z.colSums <<- colSums(Z.spmd)
   Z.colSums <<- mpi.allreduce(Z.colSums, type = 2, op = "sum")
 
   if(update.logL){
-    W.worker.rowSums <<- log(W.worker.rowSums)
+    W.spmd.rowSums <<- log(W.spmd.rowSums)
     if(tmp.flag){
-      W.worker.rowSums[tmp.id] <<- W.worker.rowSums[tmp.id] + tmp.scale
+      W.spmd.rowSums[tmp.id] <<- W.spmd.rowSums[tmp.id] + tmp.scale
     }
   }
 } # End of ap1.update.expectation().
 
 
 ### APECM1-step.
-apecm1.step.worker <- function(PARAM.org){
+apecm1.step.spmd <- function(PARAM.org){
   CHECK <<- list(method = "apecm1", i.iter = 0, abs.err = Inf, rel.err = Inf,
                  convergence = 0)
   i.iter <- 1
@@ -106,7 +106,7 @@ apecm1.step.worker <- function(PARAM.org){
     if(! exists("SAVE.iter", envir = .GlobalEnv)){
       SAVE.param <<- NULL
       SAVE.iter <<- NULL
-      CLASS.iter.org <<- unlist(apply(Z.worker, 1, which.max))
+      CLASS.iter.org <<- unlist(apply(Z.spmd, 1, which.max))
     }
   }
 
@@ -116,7 +116,7 @@ apecm1.step.worker <- function(PARAM.org){
       time.start <- proc.time()
     }
 
-    PARAM.new <- try(apecm1.onestep.worker(PARAM.org))
+    PARAM.new <- try(apecm1.onestep.spmd(PARAM.org))
     if(class(PARAM.new) == "try-error"){
       catmpi("Results of previous iterations are returned.\n")
       CHECK$convergence <<- 99
@@ -134,7 +134,7 @@ apecm1.step.worker <- function(PARAM.org){
       tmp.time <- proc.time() - time.start
 
       SAVE.param <<- c(SAVE.param, PARAM.new)
-      CLASS.iter.new <- unlist(apply(Z.worker, 1, which.max))
+      CLASS.iter.new <- unlist(apply(Z.spmd, 1, which.max))
       tmp <- as.double(sum(CLASS.iter.new != CLASS.iter.org))
       tmp <- mpi.allreduce(tmp, type = 2, op = "sum")
       tmp.all <- c(tmp / PARAM$N, PARAM.new$logL,
@@ -149,21 +149,21 @@ apecm1.step.worker <- function(PARAM.org){
   }
 
   PARAM.new
-} # End of apecm1.step.worker().
+} # End of apecm1.step.spmd().
 
-apecm1.onestep.worker <- function(PARAM){
+apecm1.onestep.spmd <- function(PARAM){
 #  if(COMM.RANK == 0){
 #    Rprof(filename = "apecm1.Rprof", append = TRUE)
 #  }
 
   ### Update ETA
-  PARAM <- cm.step.worker.ETA(PARAM)
-  ape1.step.worker(PARAM)
+  PARAM <- cm.step.spmd.ETA(PARAM)
+  ape1.step.spmd(PARAM)
 
   ### Update MU and SIGMA
   for(i.k in 1:PARAM$K){
-    PARAM <- cm.step.worker.MU.SIGMA.k(PARAM, i.k)
-    ape1.step.worker.k(PARAM, i.k,
+    PARAM <- cm.step.spmd.MU.SIGMA.k(PARAM, i.k)
+    ape1.step.spmd.k(PARAM, i.k,
                        update.logL = ifelse(i.k == PARAM$K, TRUE, FALSE))
   }
 
@@ -187,5 +187,5 @@ apecm1.onestep.worker <- function(PARAM){
   }
 
   PARAM
-} # End of apecm1.onestep.worker().
+} # End of apecm1.onestep.spmd().
 

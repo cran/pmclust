@@ -1,27 +1,27 @@
-\name{em.onestep.worker}
-\alias{em.onestep.worker}
-\title{One EM step for workers}
+\name{em.onestep.spmd}
+\alias{em.onestep.spmd}
+\title{One EM Step for SPMD}
 \description{
   One EM step only for model-based clustering of finite mixture Gaussian
   models with unstructured dispersions.
-  This is a core function of \code{\link{em.step.worker}}.
+  This is a core function of \code{\link{em.step.spmd}}.
 }
 \usage{
-  em.onestep.worker(PARAM)
+  em.onestep.spmd(PARAM)
 }
 \arguments{
   \item{PARAM}{an original set of parameters generated
                    by \code{\link{set.global}}.}
 }
 \details{
-  A global variable called \code{\link{X.worker}} should exist in the
+  A global variable called \code{\link{X.spmd}} should exist in the
   \code{\link[base]{.GlobalEnv}}
-  environment, usually the working environment. The \code{\link{X.worker}}
+  environment, usually the working environment. The \code{\link{X.spmd}}
   is the data matrix to be clustered, and this matrix has a dimension
-  \code{N.worker} by \code{p}.
+  \code{N.spmd} by \code{p}.
 
   The \code{PARAM} will be a local variable for the current iteration inside
-  \code{\link{em.onestep.worker}},
+  \code{\link{em.onestep.spmd}},
   and this variable is a list containing all parameters related to models.
   This function also updates in the parameters by the EM algorithm, and
   return a new \code{\link{PARAM}} for the next iteration.
@@ -43,12 +43,12 @@
 }
 \seealso{
   \code{\link{set.global}},
-  \code{\link{e.step.worker}},
-  \code{\link{m.step.worker}}.
+  \code{\link{e.step.spmd}},
+  \code{\link{m.step.spmd}}.
 }
 \examples{
 \dontrun{
-# This is a core function for em.estep.worker()
+# This is a core function for em.estep.spmd()
 # see the source code for details.
 }
 }

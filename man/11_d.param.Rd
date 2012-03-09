@@ -5,7 +5,7 @@
 \alias{MU}
 \alias{SIGMA}
 \docType{data}
-\title{A set of parameters in model-based clustering.}
+\title{A Set of Parameters in Model-Based Clustering.}
 \description{
   This set of parameters are used in initialization, EM iterations, and
   final convergent results. All share the same structure in a list variable.
@@ -51,7 +51,7 @@
 \examples{
 \dontrun{
 # Use set.global() to generate one of this.
-# X.worker should be pre-specified before calling set.global().
+# X.spmd should be pre-specified before calling set.global().
 }
 }
 \keyword{global variables}

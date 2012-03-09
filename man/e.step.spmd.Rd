@@ -1,12 +1,12 @@
-\name{e.step.worker}
-\alias{e.step.worker}
-\title{Compute one E-step and log likelihood at current parameters}
+\name{e.step.spmd}
+\alias{e.step.spmd}
+\title{Compute One E-step and Log Likelihood Based on Current Parameters}
 \description{
   This function will perform one E-step based on current parameters.
-  This is a core function of \code{\link{em.onestep.worker}}.
+  This is a core function of \code{\link{em.onestep.spmd}}.
 }
 \usage{
-  e.step.worker(PARAM, update.logL = TRUE)
+  e.step.spmd(PARAM, update.logL = TRUE)
 }
 \arguments{
   \item{PARAM}{a set of parameters.}
@@ -15,18 +15,18 @@
 \details{
   This function will base on the current parameter to 
   compute the densities for all observations for all
-  \code{K} components, and update the \code{\link{Z.worker}} matrix.
+  \code{K} components, and update the \code{\link{Z.spmd}} matrix.
   If the \code{update.logL} is true, then the log likelihood
-  \code{\link{W.worker.rowSums}} will be also updated before the end
+  \code{\link{W.spmd.rowSums}} will be also updated before the end
   of this function.
 
-  Sum of \code{\link{W.worker.rowSums}} of all processors will be the
+  Sum of \code{\link{W.spmd.rowSums}} of all processors will be the
   observed data log likelihood for the current iteration.
 }
 \value{
   Several global variables will be overwrote after this call including
-  \code{\link{Z.worker}}, \code{\link{W.worker.rowSums}},
-  \code{\link{W.worker}}, \code{\link{U.worker}},
+  \code{\link{Z.spmd}}, \code{\link{W.spmd.rowSums}},
+  \code{\link{W.spmd}}, \code{\link{U.spmd}},
   and \code{\link{Z.colSums}}.
 }
 \section{Computing Issues}{
@@ -50,12 +50,12 @@
 }
 \seealso{
   \code{\link{set.global}},
-  \code{\link{em.onestep.worker}},
-  \code{\link{m.step.worker}}.
+  \code{\link{em.onestep.spmd}},
+  \code{\link{m.step.spmd}}.
 }
 \examples{
 \dontrun{
-# This is a core function for em.onestep.worker()
+# This is a core function for em.onestep.spmd()
 # see the source code for details.
 }
 }

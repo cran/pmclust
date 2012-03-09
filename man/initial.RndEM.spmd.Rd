@@ -1,12 +1,12 @@
-\name{initial.RndEM.worker}
-\alias{initial.RndEM.worker}
-\title{Initialization of RndEM for X.worker}
+\name{initial.RndEM.spmd}
+\alias{initial.RndEM.spmd}
+\title{Initialization of RndEM for X.spmd}
 \description{
   This function implements RndEM procedure for model-based clustering
-  based on \code{\link{X.worker}}.
+  based on \code{\link{X.spmd}}.
 }
 \usage{
-  initial.RndEM.worker(PARAM)
+  initial.RndEM.spmd(PARAM)
 }
 \arguments{
   \item{PARAM}{an original set of parameters generated
@@ -14,12 +14,12 @@
 }
 \details{
   The RndEM procedure is implemented by randomly picking
-  \code{CONTROL$RndEM.iter} starting points from data \code{\link{X.worker}}
+  \code{CONTROL$RndEM.iter} starting points from data \code{\link{X.spmd}}
   and run one E-step to obtain the log likelihood.
   Then pick the starting point with the highest log likelihood as the
   best choice to pursue the MLEs in further EM iterations.
 
-  This function repeatedly run \code{\link{initial.em.worker}} by
+  This function repeatedly run \code{\link{initial.em.spmd}} by
   \code{CONTROL$RndEM.iter} random starts and pick the best initializations
   from the random starts.
 }
@@ -28,7 +28,7 @@
   starting points. The number of random starting points is assigned by
   \code{\link{set.global}} to a list variable \code{\link{CONTROL}}.
   See the help page
-  of \code{\link{initial.em.worker}} and \code{\link{set.global}}
+  of \code{\link{initial.em.spmd}} and \code{\link{set.global}}
   for details.
 }
 \references{
@@ -45,16 +45,16 @@
 }
 \seealso{
   \code{\link{set.global}},
-  \code{\link{initial.em.worker}},
-  \code{\link{em.step.worker}},
-  \code{\link{aecm.step.worker}}, \cr
-  \code{\link{apecm1.step.worker}},
-  \code{\link{apecm2.step.worker}}.
+  \code{\link{initial.em.spmd}},
+  \code{\link{em.step.spmd}},
+  \code{\link{aecm.step.spmd}}, \cr
+  \code{\link{apecm1.step.spmd}},
+  \code{\link{apecm2.step.spmd}}.
 }
 \examples{
 \dontrun{
-# Examples can be found in the help pages of em.step.worker(),
-# aecm.step.worker(), apecm1.step.worker(), and apecm2.step.worker().
+# Examples can be found in the help pages of em.step.spmd(),
+# aecm.step.spmd(), apecm1.step.spmd(), and apecm2.step.spmd().
 }
 }
 \keyword{initialization}

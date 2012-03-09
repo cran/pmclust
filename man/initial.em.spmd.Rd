@@ -1,11 +1,11 @@
-\name{initial.em.worker}
-\alias{initial.em.worker}
-\title{Initialization for model-based clustering}
+\name{initial.em.spmd}
+\alias{initial.em.spmd}
+\title{Initialization for Model-Based Clustering}
 \description{
   This function implements one E-step for one random initial start.
 }
 \usage{
-  initial.em.worker(PARAM, MU = NULL)
+  initial.em.spmd(PARAM, MU = NULL)
 }
 \arguments{
   \item{PARAM}{an original set of parameters generated
@@ -13,7 +13,7 @@
   \item{MU}{a center matrix with dim = \eqn{p \times K}{\code{p * K}}.}
 }
 \details{
-  This function takes \code{\link{X.worker}} from the global environment and
+  This function takes \code{\link{X.spmd}} from the global environment and
   randomly pick \eqn{K}{K} of them as the centers of \eqn{K}{K} groups.
   If \code{\link{MU}} is specified, then this \code{\link{MU}}
   will be the centers.
@@ -22,7 +22,7 @@
   classification will be updated.
 
   This function is used to implement the RndEM procedure for more
-  elaborate initialization scheme in \code{\link{initial.RndEM.worker}}.
+  elaborate initialization scheme in \code{\link{initial.RndEM.spmd}}.
   Potentially, several random starts should be tried before running EM
   algorithms. This can benefit in two aspects including:
   shorter convergent iterations and better classification results.
@@ -44,12 +44,12 @@
 }
 \seealso{
   \code{\link{set.global}},
-  \code{\link{initial.RndEM.worker}}.
+  \code{\link{initial.RndEM.spmd}}.
 }
 \examples{
 \dontrun{
-# Examples can be found in the help pages of em.step.worker(),
-# aecm.step.worker(), apecm1.step.worker(), and apecm2.step.worker().
+# Examples can be found in the help pages of em.step.spmd(),
+# aecm.step.spmd(), apecm1.step.spmd(), and apecm2.step.spmd().
 }
 }
 \keyword{initialization}
