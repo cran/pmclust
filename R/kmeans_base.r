@@ -1,23 +1,23 @@
 ### This file provides functions for kmeans.
 
-kmeans.e.step.worker <- function(PARAM){
-  nrow <- nrow(X.worker)
-  ncol <- ncol(X.worker)
+kmeans.e.step.spmd <- function(PARAM){
+  nrow <- nrow(X.spmd)
+  ncol <- ncol(X.spmd)
 
   for(i.k in 1:PARAM$K){
-    B <- W.plus.y(X.worker, -PARAM$MU[, i.k], nrow, ncol)
-    Z.worker[, i.k] <<- sqrt(rowSums(B * B))
+    B <- W.plus.y(X.spmd, -PARAM$MU[, i.k], nrow, ncol)
+    Z.spmd[, i.k] <<- sqrt(rowSums(B * B))
   }
-} # End of kmeans.e.step.worker().
+} # End of kmeans.e.step.spmd().
 
-kmeans.m.step.worker <- function(PARAM){
+kmeans.m.step.spmd <- function(PARAM){
   for(i.k in 1:PARAM$K){
-    id <- CLASS.worker == i.k
+    id <- CLASS.spmd == i.k
     tmp.n.id <- as.double(sum(id))
     tmp.n.id <- mpi.allreduce(tmp.n.id, type = 2, op = "sum")
 
     if(tmp.n.id > 0){
-      tmp.sum <- colSums(matrix(X.worker[id, ], ncol = PARAM$p))
+      tmp.sum <- colSums(matrix(X.spmd[id, ], ncol = PARAM$p))
     } else{
       tmp.sum <- rep(0.0, PARAM$p)
     }
@@ -27,13 +27,13 @@ kmeans.m.step.worker <- function(PARAM){
   } 
 
   PARAM
-} # End of kmeans.m.step.worker().
+} # End of kmeans.m.step.spmd().
 
 kmeans.logL.step <- function(){
-  tmp <- apply(Z.worker, 1, which.min)
-  tmp.diff <- sum(CLASS.worker != tmp)
+  tmp <- apply(Z.spmd, 1, which.min)
+  tmp.diff <- sum(CLASS.spmd != tmp)
 
-  CLASS.worker <<- tmp
+  CLASS.spmd <<- tmp
   mpi.allreduce(as.integer(tmp.diff), type = 1, op = "sum")
 } # End of kmeans.logL.step().
 
@@ -60,7 +60,7 @@ check.kmeans.convergence <- function(PARAM.org, PARAM.new, i.iter){
          convergence = convergence)
 } # End of check.kmeans.convergence().
 
-kmeans.step.worker <- function(PARAM.org){
+kmeans.step.spmd <- function(PARAM.org){
   CHECK <<- list(method = "kmeans", i.iter = 0, abs.err = Inf, rel.err = Inf,
                  convergence = 0)
   i.iter <- 1
@@ -71,7 +71,7 @@ kmeans.step.worker <- function(PARAM.org){
     if(! exists("SAVE.iter", envir = .GlobalEnv)){
       SAVE.param <<- NULL
       SAVE.iter <<- NULL
-      CLASS.iter.org <<- unlist(apply(Z.worker, 1, which.min))
+      CLASS.iter.org <<- unlist(apply(Z.spmd, 1, which.min))
     }
   }
 
@@ -81,7 +81,7 @@ kmeans.step.worker <- function(PARAM.org){
       time.start <- proc.time()
     }
 
-    PARAM.new <- kmeans.onestep.worker(PARAM.org)
+    PARAM.new <- kmeans.onestep.spmd(PARAM.org)
 
     CHECK <<- check.kmeans.convergence(PARAM.org, PARAM.new, i.iter)
 
@@ -94,7 +94,7 @@ kmeans.step.worker <- function(PARAM.org){
       tmp.time <- proc.time() - time.start
 
       SAVE.param <<- c(SAVE.param, PARAM.new)
-      CLASS.iter.new <- unlist(apply(Z.worker, 1, which.min))
+      CLASS.iter.new <- unlist(apply(Z.spmd, 1, which.min))
       tmp <- as.double(sum(CLASS.iter.new != CLASS.iter.org))
       tmp <- mpi.allreduce(tmp, type = 2, op = "sum")
       tmp.all <- c(tmp / PARAM$N, PARAM.new$logL,
@@ -109,15 +109,15 @@ kmeans.step.worker <- function(PARAM.org){
   }
 
   PARAM.new
-} # End of kmeans.step.worker().
+} # End of kmeans.step.spmd().
 
-kmeans.onestep.worker <- function(PARAM){
+kmeans.onestep.spmd <- function(PARAM){
 #  if(COMM.RANK == 0){
 #    Rprof(filename = "kmeans.Rprof", append = TRUE)
 #  }
 
-  PARAM <- kmeans.m.step.worker(PARAM)
-  kmeans.e.step.worker(PARAM)
+  PARAM <- kmeans.m.step.spmd(PARAM)
+  kmeans.e.step.spmd(PARAM)
 
 #  if(COMM.RANK == 0){
 #    Rprof(NULL)
@@ -135,10 +135,10 @@ kmeans.onestep.worker <- function(PARAM){
   }
 
   PARAM
-} # End of kmeans.onestep.worker().
+} # End of kmeans.onestep.spmd().
 
 
-kmeans.update.class.worker <- function(){
-  CLASS.worker <<- apply(Z.worker, 1, which.min)
-} # End of kmeans.update.class.worker().
+kmeans.update.class.spmd <- function(){
+  CLASS.spmd <<- apply(Z.spmd, 1, which.min)
+} # End of kmeans.update.class.spmd().
 

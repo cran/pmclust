@@ -1,23 +1,23 @@
 ### This file gives a simple initialization.
 
-initial.center.worker <- function(PARAM, MU = NULL){
+initial.center.spmd <- function(PARAM, MU = NULL){
   if(is.null(MU)){
-    N.worker <- nrow(X.worker)
-    N.allworkers <- mpi.allgather(as.integer(N.worker), type = 1,
+    N.spmd <- nrow(X.spmd)
+    N.allspmds <- mpi.allgather(as.integer(N.spmd), type = 1,
                                   integer(COMM.SIZE))
 
-    center.worker <- rep(0, PARAM$K)
+    center.spmd <- rep(0, PARAM$K)
     if(COMM.RANK == 0){
-      center.worker <- sample(1:COMM.SIZE, PARAM$K, replace = TRUE,
-                              prob = N.allworkers / PARAM$N) - 1
+      center.spmd <- sample(1:COMM.SIZE, PARAM$K, replace = TRUE,
+                              prob = N.allspmds / PARAM$N) - 1
     }
-    center.worker <- mpi.bcast(as.integer(center.worker), type = 1)
+    center.spmd <- mpi.bcast(as.integer(center.spmd), type = 1)
 
     tmp <- NULL
-    n.center.worker <- sum(center.worker == COMM.RANK)
-    if(n.center.worker > 0){
-      id.center.worker <- sample(1:N.worker, n.center.worker)
-      tmp <- matrix(X.worker[id.center.worker,], ncol = ncol(X.worker),
+    n.center.spmd <- sum(center.spmd == COMM.RANK)
+    if(n.center.spmd > 0){
+      id.center.spmd <- sample(1:N.spmd, n.center.spmd)
+      tmp <- matrix(X.spmd[id.center.spmd,], ncol = ncol(X.spmd),
                     byrow = TRUE)
     }
 
@@ -28,12 +28,12 @@ initial.center.worker <- function(PARAM, MU = NULL){
   }
 
   for(i.k in 1:PARAM$K){
-    B <- W.plus.y(X.worker, -PARAM$MU[, i.k], nrow(X.worker), ncol(X.worker))
-    Z.worker[, i.k] <<- -rowSums(B * B)
+    B <- W.plus.y(X.spmd, -PARAM$MU[, i.k], nrow(X.spmd), ncol(X.spmd))
+    Z.spmd[, i.k] <<- -rowSums(B * B)
   }
 
-  CLASS.worker <<- apply(Z.worker, 1, which.max)
+  CLASS.spmd <<- apply(Z.spmd, 1, which.max)
 
   PARAM
-} # End of initial.center.worker().
+} # End of initial.center.spmd().
 

@@ -24,20 +24,20 @@
   LazyLoad: \tab yes\cr
 }
 
-  The main function is \code{\link{em.step.worker}} implementing the
+  The main function is \code{\link{em.step.spmd}} implementing the
   parallel EM algorithm for mixture multivariate Gaussian models
   with unstructured dispersions. This function groups a data matrix
-  \code{\link{X.worker}} into \code{K} clusters where \code{\link{X.worker}} is
+  \code{\link{X.spmd}} into \code{K} clusters where \code{\link{X.spmd}} is
   potentially huge and taken from the global environment
   \code{\link[base]{.GlobalEnv}}.
 
-  Other main functions \code{\link{aecm.step.worker}},
-  \code{\link{apecm1.step.worker}}, and
-  \code{\link{apecm2.step.worker}} may provide better performance than the
-  \code{\link{em.step.worker}} in terms of computing time and convergent
+  Other main functions \code{\link{aecm.step.spmd}},
+  \code{\link{apecm1.step.spmd}}, and
+  \code{\link{apecm2.step.spmd}} may provide better performance than the
+  \code{\link{em.step.spmd}} in terms of computing time and convergent
   iterations.
 
-  \code{\link{kmeans.step.worker}} provides the fastest clustering among above
+  \code{\link{kmeans.step.spmd}} provides the fastest clustering among above
   algorithms, but it is restricted by Euclidean distance and spherical
   dispersions.
 }
@@ -74,11 +74,11 @@
   Wei-Chen Chen \email{wccsnow@gmail.com} and George Ostrouchov
 }
 \seealso{
-  \code{\link{em.step.worker}},
-  \code{\link{aecm.step.worker}},
-  \code{\link{apecm1.step.worker}}, \cr
-  \code{\link{apecm2.step.worker}},
-  \code{\link{kmeans.step.worker}}.
+  \code{\link{em.step.spmd}},
+  \code{\link{aecm.step.spmd}},
+  \code{\link{apecm1.step.spmd}}, \cr
+  \code{\link{apecm2.step.spmd}},
+  \code{\link{kmeans.step.spmd}}.
 }
 \examples{
 \dontrun{

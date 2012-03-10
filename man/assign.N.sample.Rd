@@ -1,43 +1,43 @@
 \name{assign.N.sample}
 \alias{assign.N.sample}
-\title{Obtain a set of random samples for X.worker}
+\title{Obtain a Set of Random Samples for X.spmd}
 \description{
-  This utility function samples data randomly from \code{\link{X.worker}}
+  This utility function samples data randomly from \code{\link{X.spmd}}
   to form a relatively small subset of original data. The EM algorithm on the
   smaller subset is topically performing fast and capturing rough structures of
   entire dataset.
 }
 \usage{
-  assign.N.sample(total.sample = 5000, N.org.worker)
+  assign.N.sample(total.sample = 5000, N.org.spmd)
 }
 \arguments{
   \item{total.sample}{a total number of samples which will be selected from
-                      the original data \code{\link{X.worker}}.}
-  \item{N.org.worker}{the original data size,
-                      i.e. \code{nrow(\link{X.worker})}.}
+                      the original data \code{\link{X.spmd}}.}
+  \item{N.org.spmd}{the original data size,
+                      i.e. \code{nrow(\link{X.spmd})}.}
 }
 \details{
   This utility function performs simple random sampling without replacement
-  for the original dataset \code{\link{X.worker}}.
+  for the original dataset \code{\link{X.spmd}}.
   Different random seeds should
   be set before calling this function. A easy way is to call for example
   \code{\link[base]{set.seed}(123 + \link[Rmpi]{mpi.comm.rank}())}.
 }
 \value{
   A list variable will be returned and containing:
-\tabular{ll}{\code{N}            \tab total sample size across all
-                                      \eqn{S}{S} processors \cr
-             \code{N.worker}     \tab sample size of given processor \cr
-             \code{N.allworkers} \tab a collection of sample sizes for all
-                                      \eqn{S}{S} processors \cr
-             \code{ID.worker}    \tab index of selected samples ranged from 1
-                                      to \code{N.org.worker}
+\tabular{ll}{\code{N}          \tab total sample size across all
+                                    \eqn{S}{S} processors \cr
+             \code{N.spmd}     \tab sample size of given processor \cr
+             \code{N.allspmds} \tab a collection of sample sizes for all
+                                    \eqn{S}{S} processors \cr
+             \code{ID.spmd}    \tab index of selected samples ranged from 1
+                                    to \code{N.org.spmd}
 }
-  Note that \code{N} and \code{N.allworkers} are the same across all
-  \eqn{S}{S} processors, but \code{N.worker} and \code{ID.worker} are most
+  Note that \code{N} and \code{N.allspmds} are the same across all
+  \eqn{S}{S} processors, but \code{N.spmd} and \code{ID.spmd} are most
   likely all distinct. The lengths of these elements are \eqn{1}{1} for
-  \code{N} and \code{N.worker}, \eqn{S}{S} for \code{N.allworker}, and
-  \code{N.worker} for \code{ID.worker}.
+  \code{N} and \code{N.spmd}, \eqn{S}{S} for \code{N.allspmd}, and
+  \code{N.spmd} for \code{ID.spmd}.
 }
 \references{
   High Performance Statistical Computing Website:
@@ -60,9 +60,9 @@ invisible(mpi.comm.dup(0, 1))
 
 ### Generate an example data.
 set.seed(123 + mpi.comm.rank())
-N.org.worker <- 5000 + sample(1:1000, 1)
-ret.worker <- assign.N.sample(total.sample = 5000, N.org.worker)
-cat("Rank:", mpi.comm.rank(), " Size:", ret.worker$N.worker,
+N.org.spmd <- 5000 + sample(1:1000, 1)
+ret.spmd <- assign.N.sample(total.sample = 5000, N.org.spmd)
+cat("Rank:", mpi.comm.rank(), " Size:", ret.spmd$N.spmd,
     "\n", sep = "")
 
 ### Quit Rmpi.

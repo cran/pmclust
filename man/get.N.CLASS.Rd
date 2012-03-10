@@ -1,6 +1,6 @@
 \name{get.N.CLASS}
 \alias{get.N.CLASS}
-\title{Obtain total elements for every clusters}
+\title{Obtain Total Elements for Every Clusters}
 \description{
   This function will collect the total elements for every clusters
   from all processors that the all reduced calls with the sum operation
@@ -14,9 +14,9 @@
 }
 \details{
   The final results are distributed in all processors including the total
-  elements for each cluster. The global variable \code{\link{CLASS.worker}}
+  elements for each cluster. The global variable \code{\link{CLASS.spmd}}
   stores the identification for each observation on each processors.
-  This function will first summary \code{\link{CLASS.worker}}
+  This function will first summary \code{\link{CLASS.spmd}}
   in \code{K} categories,
   then use the all reduce function with the sum operation to add the numbers
   by clusters.
@@ -35,16 +35,16 @@
   Wei-Chen Chen \email{wccsnow@gmail.com} and George Ostrouchov.
 }
 \seealso{
-  \code{\link{em.step.worker}},
-  \code{\link{aecm.step.worker}},
-  \code{\link{apecm1.step.worker}}, \cr
-  \code{\link{apecm2.step.worker}},
-  \code{\link{kmeans.step.worker}}.
+  \code{\link{em.step.spmd}},
+  \code{\link{aecm.step.spmd}},
+  \code{\link{apecm1.step.spmd}}, \cr
+  \code{\link{apecm2.step.spmd}},
+  \code{\link{kmeans.step.spmd}}.
 }
 \examples{
 \dontrun{
-# Examples can be found in the help pages of em.step.worker(),
-# aecm.step.worker(), apecm1.step.worker(), and apecm2.step.worker().
+# Examples can be found in the help pages of em.step.spmd(),
+# aecm.step.spmd(), apecm1.step.spmd(), and apecm2.step.spmd().
 }
 }
 \keyword{programming}

@@ -2,14 +2,14 @@
 ### Note that Inf, -Inf, NA, NaN is drop from the summation.
 
 indep.logL <- function(PARAM){
-  nrow <- nrow(X.worker)
-  ncol <- ncol(X.worker)
+  nrow <- nrow(X.spmd)
+  ncol <- ncol(X.spmd)
 
   log.a <- log(2 * pi) * (-0.5 * ncol)
 
   ret <- matrix(0, nrow = nrow, ncol = PARAM$K)
   for(i.k in 1:PARAM$K){
-    tmp.X <- W.plus.y(X.worker, -PARAM$MU[, i.k], nrow, ncol)
+    tmp.X <- W.plus.y(X.spmd, -PARAM$MU[, i.k], nrow, ncol)
 
     tmp.S <- PARAM$SIGMA[[i.k]]
     log.b <- -0.5 * log(abs(det(tmp.S)))

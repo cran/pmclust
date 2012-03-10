@@ -1,29 +1,29 @@
 ### This file contains major functions for EM iterations.
 
 ### CM-step.
-cm.step.worker.ETA <- function(PARAM){
+cm.step.spmd.ETA <- function(PARAM){
   ### MLE For ETA
   PARAM$ETA <- Z.colSums / sum(Z.colSums)
   PARAM$log.ETA <- log(PARAM$ETA)
   PARAM
-} # End of cm.step.worker.ETA().
+} # End of cm.step.spmd.ETA().
 
-cm.step.worker.MU <- function(PARAM){
+cm.step.spmd.MU <- function(PARAM){
   for(i.k in 1:PARAM$K){
     ### MLE for MU
-    tmp.MU <- colSums(X.worker * Z.worker[, i.k]) / Z.colSums[i.k]
+    tmp.MU <- colSums(X.spmd * Z.spmd[, i.k]) / Z.colSums[i.k]
     PARAM$MU[, i.k] <- mpi.allreduce(tmp.MU, type = 2, op = "sum")
   }
 
   PARAM
-} # End of cm.step.worker.MU().
+} # End of cm.step.spmd.MU().
 
-cm.step.worker.SIGMA <- function(PARAM){
+cm.step.spmd.SIGMA <- function(PARAM){
   for(i.k in 1:PARAM$K){
     if(PARAM$U.check[[i.k]]){
-      B <- W.plus.y(X.worker, -PARAM$MU[, i.k],
-                    nrow(X.worker), ncol(X.worker)) *
-           sqrt(Z.worker[, i.k] / Z.colSums[i.k])
+      B <- W.plus.y(X.spmd, -PARAM$MU[, i.k],
+                    nrow(X.spmd), ncol(X.spmd)) *
+           sqrt(Z.spmd[, i.k] / Z.colSums[i.k])
       tmp.SIGMA <- crossprod(B)
       tmp.SIGMA <- mpi.allreduce(tmp.SIGMA, type = 2, op = "sum") 
       dim(tmp.SIGMA) <- c(PARAM$p, PARAM$p)
@@ -42,11 +42,11 @@ cm.step.worker.SIGMA <- function(PARAM){
   }
 
   PARAM
-} # End of cm.step.worker.SIGMA().
+} # End of cm.step.spmd.SIGMA().
 
 
 ### AECM-step.
-aecm.step.worker <- function(PARAM.org){
+aecm.step.spmd <- function(PARAM.org){
   CHECK <<- list(method = "aecm", i.iter = 0, abs.err = Inf, rel.err = Inf,
                  convergence = 0)
   i.iter <- 1
@@ -57,7 +57,7 @@ aecm.step.worker <- function(PARAM.org){
     if(! exists("SAVE.iter", envir = .GlobalEnv)){
       SAVE.param <<- NULL
       SAVE.iter <<- NULL
-      CLASS.iter.org <<- unlist(apply(Z.worker, 1, which.max))
+      CLASS.iter.org <<- unlist(apply(Z.spmd, 1, which.max))
     }
   }
 
@@ -67,7 +67,7 @@ aecm.step.worker <- function(PARAM.org){
       time.start <- proc.time()
     }
 
-    PARAM.new <- try(aecm.onestep.worker(PARAM.org))
+    PARAM.new <- try(aecm.onestep.spmd(PARAM.org))
     if(class(PARAM.new) == "try-error"){
       catmpi("Results of previous iterations are returned.\n")
       CHECK$convergence <<- 99
@@ -85,7 +85,7 @@ aecm.step.worker <- function(PARAM.org){
       tmp.time <- proc.time() - time.start
 
       SAVE.param <<- c(SAVE.param, PARAM.new)
-      CLASS.iter.new <- unlist(apply(Z.worker, 1, which.max))
+      CLASS.iter.new <- unlist(apply(Z.spmd, 1, which.max))
       tmp <- as.double(sum(CLASS.iter.new != CLASS.iter.org))
       tmp <- mpi.allreduce(tmp, type = 2, op = "sum")
       tmp.all <- c(tmp / PARAM$N, PARAM.new$logL,
@@ -100,21 +100,21 @@ aecm.step.worker <- function(PARAM.org){
   }
 
   PARAM.new
-} # End of aecm.step.worker().
+} # End of aecm.step.spmd().
 
-aecm.onestep.worker <- function(PARAM){
+aecm.onestep.spmd <- function(PARAM){
 #  if(COMM.RANK == 0){
 #    Rprof(filename = "aecm.Rprof", append = TRUE)
 #  }
 
-  PARAM <- cm.step.worker.ETA(PARAM)
-  e.step.worker(PARAM, update.logL = FALSE)
+  PARAM <- cm.step.spmd.ETA(PARAM)
+  e.step.spmd(PARAM, update.logL = FALSE)
 
-  PARAM <- cm.step.worker.MU(PARAM)
-  e.step.worker(PARAM, update.logL = FALSE)
+  PARAM <- cm.step.spmd.MU(PARAM)
+  e.step.spmd(PARAM, update.logL = FALSE)
 
-  PARAM <- cm.step.worker.SIGMA(PARAM)
-  e.step.worker(PARAM, update.logL = TRUE)
+  PARAM <- cm.step.spmd.SIGMA(PARAM)
+  e.step.spmd(PARAM, update.logL = TRUE)
 
 #  if(COMM.RANK == 0){
 #    Rprof(NULL)
@@ -136,5 +136,5 @@ aecm.onestep.worker <- function(PARAM){
   }
 
   PARAM
-} # End of aecm.onestep.worker().
+} # End of aecm.onestep.spmd().
 

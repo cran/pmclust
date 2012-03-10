@@ -1,7 +1,7 @@
 ### This file contains a simple data generation.
 
-### N.K.worker: integer[K], number of elements of each cluster.
-generate.basic.worker <- function(N.allworkers, N.worker, N.K.worker,
+### N.K.spmd: integer[K], number of elements of each cluster.
+generate.basic.spmd <- function(N.allspmds, N.spmd, N.K.spmd,
     N, p, K, seed){
   set.seed(seed)
 
@@ -9,7 +9,7 @@ generate.basic.worker <- function(N.allworkers, N.worker, N.K.worker,
   data.class <- NULL
   data.n.class <- rep(0, K)
   for(i.k in 1:K){
-    tmp.n.k <- N.K.worker[i.k]
+    tmp.n.k <- N.K.spmd[i.k]
 
     if(tmp.n.k > 0){
       tmp.data.simu <- NULL
@@ -24,10 +24,10 @@ generate.basic.worker <- function(N.allworkers, N.worker, N.K.worker,
     }
   }
 
-  ret <- list(K = K, p = p, N = N, N.allworkers = N.allworkers,
-              N.worker = N.worker, N.K.worker = N.K.worker, seed = seed,
-              X.worker = data.simu, CLASS.worker = data.class,
-              N.CLASS.worker = data.n.class)
+  ret <- list(K = K, p = p, N = N, N.allspmds = N.allspmds,
+              N.spmd = N.spmd, N.K.spmd = N.K.spmd, seed = seed,
+              X.spmd = data.simu, CLASS.spmd = data.class,
+              N.CLASS.spmd = data.n.class)
   ret
-} # End of generate.basic.worker().
+} # End of generate.basic.spmd().
 

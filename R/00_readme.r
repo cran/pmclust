@@ -10,21 +10,21 @@ cat('
 #     - RndEM.iter: integer[1], number of iterations of RndEM.
 #     - exp.min: double[1], minimum exponent for base e.
 #     - exp.max: double[1], maximum exponent for base e.
-#   COMM.SIZE: integer[1], total workers.
+#   COMM.SIZE: integer[1], total spmds.
 #   p.times.logtwopi: p * log(2 * pi), for log likelihood.
 # (different)
 #   COMM.RANK: integer[1], rank in the communicator.
-#   X.worker: double[N.worker, p], data.
-#   ID.sample.worker: integer[], sampling id point to the large dataset.
+#   X.spmd: double[N.spmd, p], data.
+#   ID.sample.spmd: integer[], sampling id point to the large dataset.
 
 ### Global variables:
 # (different)
-#   Z.worker: double[N.worker, K], posterior probability.
+#   Z.spmd: double[N.spmd, K], posterior probability.
 #   Z.colSums: double[K], sum of posterior probability.
-#   W.worker: double[N.worker, K], conditional log posterior probability.
-#   W.worker.rowSums: double[N.worker], log density for each observations.
-#   U.worker: double[N.worker, K], W.worker plus log eta.
-#   CLASS.worker: double[N.worker], classification of observations.
+#   W.spmd: double[N.spmd, K], conditional log posterior probability.
+#   W.spmd.rowSums: double[N.spmd], log density for each observations.
+#   U.spmd: double[N.spmd, K], W.spmd plus log eta.
+#   CLASS.spmd: double[N.spmd], classification of observations.
 #   CHECK: list[4], for output.
 #     - method: string[1], "em", "aecm", "apecm1", "apecm2", or "kmeans".
 #     - i.iter: integer[1], current iteration.
@@ -53,7 +53,7 @@ cat('
 
 ### Output: 
 # (different)
-#   CLASS.worker
+#   CLASS.spmd
 # (rank = 0, only, identical)
 #   PARAM, CHECK
 ')

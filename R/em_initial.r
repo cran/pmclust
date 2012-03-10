@@ -1,40 +1,40 @@
 ### This file gives initializations.
 
-initial.em.worker <- function(PARAM, MU = NULL){
+initial.em.spmd <- function(PARAM, MU = NULL){
   if(is.null(MU)){
     ### Set semi-supervised information.
-    N.worker <- nrow(X.worker)
+    N.spmd <- nrow(X.spmd)
     unlabeled.K <- PARAM$K
-    unlabeled.N.worker <- N.worker
+    unlabeled.N.spmd <- N.spmd
     # if(SS.clustering){
     #   unlabeled.K <- unlabeled.K - SS.K
-    #   unlabeled.N.worker <- unlabeled.N.worker - length(SS.id.worker)
+    #   unlabeled.N.spmd <- unlabeled.N.spmd - length(SS.id.spmd)
     # }
 
     ### Simple random sampling from data.
-    N.allworkers <- mpi.allgather(as.integer(unlabeled.N.worker), type = 1,
+    N.allspmds <- mpi.allgather(as.integer(unlabeled.N.spmd), type = 1,
                                   integer(COMM.SIZE))
 
-    center.worker <- rep(0, unlabeled.K)
+    center.spmd <- rep(0, unlabeled.K)
     if(COMM.RANK == 0){
-      center.worker <- sample(1:COMM.SIZE, unlabeled.K, replace = TRUE,
-                              prob = N.allworkers / sum(N.allworkers)) - 1
+      center.spmd <- sample(1:COMM.SIZE, unlabeled.K, replace = TRUE,
+                              prob = N.allspmds / sum(N.allspmds)) - 1
     }
-    center.worker <- mpi.bcast(as.integer(center.worker), type = 1)
+    center.spmd <- mpi.bcast(as.integer(center.spmd), type = 1)
 
     tmp <- NULL
-    n.center.worker <- sum(center.worker == COMM.RANK)
-    if(n.center.worker > 0){
-      N.pool <- 1:N.worker
-      # if(SS.clustering && length(SS.id.worker) > 0){
-      #   N.pool <- N.pool[-SS.id.worker]
+    n.center.spmd <- sum(center.spmd == COMM.RANK)
+    if(n.center.spmd > 0){
+      N.pool <- 1:N.spmd
+      # if(SS.clustering && length(SS.id.spmd) > 0){
+      #   N.pool <- N.pool[-SS.id.spmd]
       # }
-      id.center.worker <- sample(N.pool, n.center.worker)
-      tmp <- matrix(X.worker[id.center.worker,], ncol = ncol(X.worker),
+      id.center.spmd <- sample(N.pool, n.center.spmd)
+      tmp <- matrix(X.spmd[id.center.spmd,], ncol = ncol(X.spmd),
                     byrow = TRUE)
     }
     MU <- matrix(unlist(mpi.allgather.Robj(obj = tmp)),
-                 nrow = ncol(X.worker), ncol = unlabeled.K)
+                 nrow = ncol(X.spmd), ncol = unlabeled.K)
 
     ### Combind centers from semi-supervised information if any.
     # PARAM$MU <- cbind(SS.MU, MU)
@@ -43,21 +43,21 @@ initial.em.worker <- function(PARAM, MU = NULL){
     PARAM$MU <- MU
   }
 
-  e.step.worker(PARAM)
+  e.step.spmd(PARAM)
   PARAM$logL <- logL.step()
-  em.update.class.worker()
+  em.update.class.spmd()
 
   PARAM
-} # End of initial.em.worker().
+} # End of initial.em.spmd().
 
 
-initial.RndEM.worker <- function(PARAM){
+initial.RndEM.spmd <- function(PARAM){
   logL.save <- -Inf
   i.iter <- 1
 
   PARAM.org <- PARAM
   repeat{
-    PARAM <- initial.em.worker(PARAM.org)
+    PARAM <- initial.em.spmd(PARAM.org)
     if(class(PARAM) == "try-error"){
        next
     }
@@ -88,7 +88,7 @@ initial.RndEM.worker <- function(PARAM){
   if(CONTROL$debug > 0){
     catmpi("Using initial iter: ", PARAM.save$initial.i.iter, "\n", sep = "")
   }
-  PARAM <- initial.em.worker(PARAM.save, MU = PARAM.save$MU)
+  PARAM <- initial.em.spmd(PARAM.save, MU = PARAM.save$MU)
   PARAM
-} # End of initial.RandRM.worker().
+} # End of initial.RandRM.spmd().
 

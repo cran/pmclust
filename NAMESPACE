@@ -8,29 +8,29 @@ export(
   "set.global",
 
   ### Initial functions.
-  "initial.em.worker",
-  "initial.RndEM.worker",
+  "initial.em.spmd",
+  "initial.RndEM.spmd",
   "assign.N.sample",
-  "initial.center.worker",
+  "initial.center.spmd",
 
   ### EM methods.
-  "em.step.worker",
-  "aecm.step.worker",
-  "apecm1.step.worker",
-  "apecm2.step.worker",
-  "em.update.class.worker",
+  "em.step.spmd",
+  "aecm.step.spmd",
+  "apecm1.step.spmd",
+  "apecm2.step.spmd",
+  "em.update.class.spmd",
   
   ### EM utility functions
-  "e.step.worker",
-  "m.step.worker",
+  "e.step.spmd",
+  "m.step.spmd",
   "indep.logL",
 
   ### K-means.
-  "kmeans.step.worker",
-  "kmeans.update.class.worker",
+  "kmeans.step.spmd",
+  "kmeans.update.class.spmd",
 
   ### Example functions
-  "generate.basic.worker",
+  "generate.basic.spmd",
 
   ### Utility functions
   "get.N.CLASS",

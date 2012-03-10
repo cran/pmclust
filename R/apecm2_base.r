@@ -1,32 +1,32 @@
 ### This file contains major functions for EM iterations.
 
 ### E-step.
-ape.step.worker.k <- function(PARAM, i.k, update.logL = TRUE){
+ape.step.spmd.k <- function(PARAM, i.k, update.logL = TRUE){
   logdmvnorm(PARAM, i.k)
   update.expectation(PARAM, update.logL = update.logL)
-} # End of ape.step.worker.k().
+} # End of ape.step.spmd.k().
 
 ### CM-step
-cm.step.worker.ETA.MU.SIGMA.k <- function(PARAM, i.k){
+cm.step.spmd.ETA.MU.SIGMA.k <- function(PARAM, i.k){
   ### MLE For ETA
   PARAM$ETA <- Z.colSums / sum(Z.colSums)
   PARAM$log.ETA <- log(PARAM$ETA)
 
   ### MLE for MU and SIGMA
-  PARAM <- cm.step.worker.MU.SIGMA.k(PARAM, i.k)
+  PARAM <- cm.step.spmd.MU.SIGMA.k(PARAM, i.k)
 
   PARAM
-} # End of cm.step.worker.ETA.MU.SIGMA.k().
+} # End of cm.step.spmd.ETA.MU.SIGMA.k().
 
-cm.step.worker.MU.SIGMA.k <- function(PARAM, i.k){
+cm.step.spmd.MU.SIGMA.k <- function(PARAM, i.k){
   ### MLE for MU
-  tmp.MU <- colSums(X.worker * Z.worker[, i.k]) / Z.colSums[i.k]
+  tmp.MU <- colSums(X.spmd * Z.spmd[, i.k]) / Z.colSums[i.k]
   PARAM$MU[, i.k] <- mpi.allreduce(tmp.MU, type = 2, op = "sum")
 
   ### MLE for SIGMA
   if(PARAM$U.check[[i.k]]){
-    B <- W.plus.y(X.worker, -PARAM$MU[, i.k], nrow(X.worker), ncol(X.worker)) *
-         sqrt(Z.worker[, i.k] / Z.colSums[i.k])
+    B <- W.plus.y(X.spmd, -PARAM$MU[, i.k], nrow(X.spmd), ncol(X.spmd)) *
+         sqrt(Z.spmd[, i.k] / Z.colSums[i.k])
     tmp.SIGMA <- crossprod(B)
     tmp.SIGMA <- mpi.allreduce(tmp.SIGMA, type = 2, op = "sum") 
     dim(tmp.SIGMA) <- c(PARAM$p, PARAM$p)
@@ -44,11 +44,11 @@ cm.step.worker.MU.SIGMA.k <- function(PARAM, i.k){
   }
 
   PARAM
-} # End of cm.step.worker.MU.SIGMA.k().
+} # End of cm.step.spmd.MU.SIGMA.k().
 
 
 ### APECM-step.
-apecm2.step.worker <- function(PARAM.org){
+apecm2.step.spmd <- function(PARAM.org){
   CHECK <<- list(method = "apecm2", i.iter = 0, abs.err = Inf, rel.err = Inf,
                  convergence = 0)
   i.iter <- 1
@@ -59,7 +59,7 @@ apecm2.step.worker <- function(PARAM.org){
     if(! exists("SAVE.iter", envir = .GlobalEnv)){
       SAVE.param <<- NULL
       SAVE.iter <<- NULL
-      CLASS.iter.org <<- unlist(apply(Z.worker, 1, which.max))
+      CLASS.iter.org <<- unlist(apply(Z.spmd, 1, which.max))
     }
   }
 
@@ -69,7 +69,7 @@ apecm2.step.worker <- function(PARAM.org){
       time.start <- proc.time()
     }
 
-    PARAM.new <- try(apecm2.onestep.worker(PARAM.org))
+    PARAM.new <- try(apecm2.onestep.spmd(PARAM.org))
     if(class(PARAM.new) == "try-error"){
       catmpi("Results of previous iterations are returned.\n")
       CHECK$convergence <<- 99
@@ -87,7 +87,7 @@ apecm2.step.worker <- function(PARAM.org){
       tmp.time <- proc.time() - time.start
 
       SAVE.param <<- c(SAVE.param, PARAM.new)
-      CLASS.iter.new <- unlist(apply(Z.worker, 1, which.max))
+      CLASS.iter.new <- unlist(apply(Z.spmd, 1, which.max))
       tmp <- as.double(sum(CLASS.iter.new != CLASS.iter.org))
       tmp <- mpi.allreduce(tmp, type = 2, op = "sum")
       tmp.all <- c(tmp / PARAM$N, PARAM.new$logL,
@@ -102,16 +102,16 @@ apecm2.step.worker <- function(PARAM.org){
   }
 
   PARAM.new
-} # End of apecm2.step.worker().
+} # End of apecm2.step.spmd().
 
-apecm2.onestep.worker <- function(PARAM){
+apecm2.onestep.spmd <- function(PARAM){
 #  if(COMM.RANK == 0){
 #    Rprof(filename = "apecm2.Rprof", append = TRUE)
 #  }
 
   for(i.k in 1:PARAM$K){
-    PARAM <- cm.step.worker.ETA.MU.SIGMA.k(PARAM, i.k)
-    ape.step.worker.k(PARAM, i.k,
+    PARAM <- cm.step.spmd.ETA.MU.SIGMA.k(PARAM, i.k)
+    ape.step.spmd.k(PARAM, i.k,
                       update.logL = ifelse(i.k == PARAM$K, TRUE, FALSE))
   }
 
@@ -135,5 +135,5 @@ apecm2.onestep.worker <- function(PARAM){
   }
 
   PARAM
-} # End of apecm2.onestep.worker().
+} # End of apecm2.onestep.spmd().
 

@@ -1,6 +1,6 @@
 \name{printmpi}
 \alias{printmpi}
-\title{print function}
+\title{Print Function}
 \description{
   This function will print a variable from specified processors, by default
   messages will be shown on screen.

@@ -1,6 +1,6 @@
 \name{mb.print}
 \alias{mb.print}
-\title{Print results of model-based clustering}
+\title{Print Results of Model-Based Clustering}
 \description{
   This function will print summarized messages for model-based clustering.
 }
@@ -27,15 +27,15 @@
   Wei-Chen Chen \email{wccsnow@gmail.com} and George Ostrouchov.
 }
 \seealso{
-  \code{\link{em.step.worker}},
-  \code{\link{aecm.step.worker}},
-  \code{\link{apecm1.step.worker}}, \cr
-  \code{\link{apecm2.step.worker}}.
+  \code{\link{em.step.spmd}},
+  \code{\link{aecm.step.spmd}},
+  \code{\link{apecm1.step.spmd}}, \cr
+  \code{\link{apecm2.step.spmd}}.
 }
 \examples{
 \dontrun{
-# Examples can be found in the help pages of em.step.worker(),
-# aecm.step.worker(), apecm1.step.worker(), and apecm2.step.worker().
+# Examples can be found in the help pages of em.step.spmd(),
+# aecm.step.spmd(), apecm1.step.spmd(), and apecm2.step.spmd().
 }
 }
 \keyword{programming}

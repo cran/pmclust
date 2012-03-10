@@ -3,11 +3,11 @@ set.global <- function(K = 2, PARAM = NULL,
     method = c("em", "aecm", "apecm1", "apecm2", "kmeans"),
     RndEM.iter = 10){
   ### Get data information.
-  N.worker <- nrow(X.worker)
-  N.allworkers <- mpi.allgather(as.integer(N.worker), type = 1,
+  N.spmd <- nrow(X.spmd)
+  N.allspmds <- mpi.allgather(as.integer(N.spmd), type = 1,
                                 integer(mpi.comm.size()))
-  N <- sum(N.allworkers)
-  p <- ncol(X.worker)
+  N <- sum(N.allspmds)
+  p <- ncol(X.spmd)
 
   ### Set parameters.
   if(is.null(PARAM)){
@@ -36,18 +36,18 @@ set.global <- function(K = 2, PARAM = NULL,
 
   p.times.logtwopi <<- p * log(2 * pi)
 
-  Z.worker <<- matrix(0.0, nrow = N.worker, ncol = K)
+  Z.spmd <<- matrix(0.0, nrow = N.spmd, ncol = K)
   Z.colSums <<- rep(0.0, K)
-  W.worker <<- matrix(0.0, nrow = N.worker, ncol = K)
-  W.worker.rowSums <<- rep(0.0, N.worker)
-  U.worker <<- matrix(0.0, nrow = N.worker, ncol = K)
-  CLASS.worker <<- rep(0, N.worker)
+  W.spmd <<- matrix(0.0, nrow = N.spmd, ncol = K)
+  W.spmd.rowSums <<- rep(0.0, N.spmd)
+  U.spmd <<- matrix(0.0, nrow = N.spmd, ncol = K)
+  CLASS.spmd <<- rep(0, N.spmd)
 
   CHECK <<- list(method = method[1], i.iter = 0, abs.err = Inf, rel.err = Inf,
                  convergence = 0)
 
   ### For semi-supervised clustering.
-#  assign.ss.worker()
+#  assign.ss.spmd()
 
   for(i.k in 1:K){
     tmp.U <- decompsigma(PARAM$SIGMA[[i.k]])

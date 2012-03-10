@@ -1,7 +1,7 @@
 \name{.3.CONTROL}
 \alias{CONTROL}
 \docType{data}
-\title{A set of controls in model-based clustering.}
+\title{A Set of Controls in Model-Based Clustering.}
 \description{
   This set of controls are used to guide all algorithms implemented in
   this package.
@@ -44,7 +44,7 @@
   the degenerate and inflated components. Usually, this is a sign of
   overestimate the number of components \code{K}, or the initialization
   do not provide good estimations for parameters.
-  See \code{\link{e.step.worker}} for more information about computing.
+  See \code{\link{e.step.spmd}} for more information about computing.
 }
 \references{
   High Performance Statistical Computing Website:
@@ -59,7 +59,7 @@
 \examples{
 \dontrun{
 # Use set.global() to generate one of this.
-# X.worker should be pre-specified before calling set.global().
+# X.spmd should be pre-specified before calling set.global().
 }
 }
 \keyword{global variables}

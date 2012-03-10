@@ -2,16 +2,16 @@
 
 
 ### Estimate MU based on classified data.
-estimate.MU <- function(X.worker, CLASS.worker, K){
-  p <- ncol(X.worker)
+estimate.MU <- function(X.spmd, CLASS.spmd, K){
+  p <- ncol(X.spmd)
   MU.CLASS <- matrix(0, nrow = p, ncol = K)
 
   for(i.k in 1:K){
-    tmp.id <- which(CLASS.worker == i.k)
+    tmp.id <- which(CLASS.spmd == i.k)
     tmp.n.id <- mpi.allreduce(as.double(length(tmp.id)), type = 2, op = "sum")
 
     if(length(tmp.id) > 0){
-      tmp.MU <- colSums(X.worker[tmp.id,])
+      tmp.MU <- colSums(X.spmd[tmp.id,])
     } else{
       tmp.MU <- rep(0.0, p)
     }
@@ -25,35 +25,35 @@ estimate.MU <- function(X.worker, CLASS.worker, K){
 
 
 ### Estimate SIGMA based on classified data.
-#my.estimate.sigma <- function(n, k, X.worker, MU){
-#  x <- matrix(X.worker[n,] - MU[, k], nrow = 1)
+#my.estimate.sigma <- function(n, k, X.spmd, MU){
+#  x <- matrix(X.spmd[n,] - MU[, k], nrow = 1)
 #  as.vector((t(x) %*% x))
 #} # End of my.estimate.sigma().
 
-estimate.SIGMA <- function(X.worker, MU, CLASS.worker, K){
-  p <- ncol(X.worker)
+estimate.SIGMA <- function(X.spmd, MU, CLASS.spmd, K){
+  p <- ncol(X.spmd)
   SIGMA.CLASS <- NULL
 
   for(i.k in 1:K){  
-    tmp.id <- which(CLASS.worker == i.k)
+    tmp.id <- which(CLASS.spmd == i.k)
     tmp.n.id <- mpi.allreduce(as.double(length(tmp.id)), type = 2, op = "sum")
 
     if(length(tmp.id) == 1){
-      tmp.X.worker <- X.worker[tmp.id,] - MU[, i.k]
-      dim(tmp.X.worker) <- c(1, p)
-      tmp.SIGMA <- crossprod(tmp.X.worker)
+      tmp.X.spmd <- X.spmd[tmp.id,] - MU[, i.k]
+      dim(tmp.X.spmd) <- c(1, p)
+      tmp.SIGMA <- crossprod(tmp.X.spmd)
     } else if(length(tmp.id) > 1){
 # Version 1:
 #      tmp.SIGMA <- rowSums(do.call("cbind",
 #                                   lapply(tmp.id, my.estimate.sigma,
-#                                          i.k, X.worker, MU)))
+#                                          i.k, X.spmd, MU)))
 # Version 2:
-#      tmp.X.worker <- t.X.worker[tmp.id,] - MU[, i.k]
-#      tmp.SIGMA <- tmp.X.worker %*% t(tmp.X.worker)
+#      tmp.X.spmd <- t.X.spmd[tmp.id,] - MU[, i.k]
+#      tmp.SIGMA <- tmp.X.spmd %*% t(tmp.X.spmd)
 # Version 3:
-      tmp.X.worker <- W.plus.y(X.worker[tmp.id,], -MU[, i.k],
+      tmp.X.spmd <- W.plus.y(X.spmd[tmp.id,], -MU[, i.k],
                                length(tmp.id), p)
-      tmp.SIGMA <- crossprod(tmp.X.worker)
+      tmp.SIGMA <- crossprod(tmp.X.spmd)
     } else{
       tmp.SIGMA <- rep(0.0, p * p)
     }
@@ -68,7 +68,7 @@ estimate.SIGMA <- function(X.worker, MU, CLASS.worker, K){
 
 ### This function collects N.CLASS
 get.N.CLASS <- function(K){
-  tmp.n.class <- tabulate(CLASS.worker, nbins = K)
+  tmp.n.class <- tabulate(CLASS.spmd, nbins = K)
   mpi.allreduce(as.integer(tmp.n.class), type = 1, op = "sum")
 } # End of get.N.CLASS().
 

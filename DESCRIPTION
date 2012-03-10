@@ -1,6 +1,6 @@
 Package: pmclust
-Version: 0.1-1
-Date: 2012-02-08
+Version: 0.1-2
+Date: 2012-03-09
 Title: Parallel Model-Based Clustering
 Author: Wei-Chen Chen, George Ostrouchov
 Maintainer: Wei-Chen Chen <wccsnow@gmail.com>
@@ -20,6 +20,6 @@ Description: The pmclust aims to utilize model-based clustering
         information, documents and examples.
 License: GPL (>= 2)
 URL: http://thirteen-01.stat.iastate.edu/snoweye/hpsc/
-Packaged: 2012-02-08 15:41:22 UTC; snoweye
+Packaged: 2012-03-09 21:55:57 UTC; snoweye
 Repository: CRAN
-Date/Publication: 2012-02-08 18:27:24
+Date/Publication: 2012-03-10 06:34:34

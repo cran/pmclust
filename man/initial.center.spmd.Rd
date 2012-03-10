@@ -1,12 +1,12 @@
-\name{initial.center.worker}
-\alias{initial.center.worker}
-\title{Initialization for K-means algorithm}
+\name{initial.center.spmd}
+\alias{initial.center.spmd}
+\title{Initialization for K-means Algorithm}
 \description{
   This function implements simple initialization for K-means algorithm
-  by randomly picking samples from data based on X.worker.
+  by randomly picking samples from data based on X.spmd.
 }
 \usage{
-  initial.center.worker(PARAM, MU = NULL)
+  initial.center.spmd(PARAM, MU = NULL)
 }
 \arguments{
   \item{PARAM}{an original set of parameters generated
@@ -28,11 +28,11 @@
 }
 \seealso{
   \code{\link{set.global}},
-  \code{\link{initial.RndEM.worker}}.
+  \code{\link{initial.RndEM.spmd}}.
 }
 \examples{
 \dontrun{
-# Examples can be found in the help page of kmeans.step.worker().
+# Examples can be found in the help page of kmeans.step.spmd().
 }
 }
 \keyword{initialization}

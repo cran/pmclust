@@ -1,26 +1,26 @@
-\name{generate.basic.worker}
-\alias{generate.basic.worker}
-\title{Generate basic examples for testing}
+\name{generate.basic.spmd}
+\alias{generate.basic.spmd}
+\title{Generate Basic Examples for Testing}
 \description{
   This function will generate a small set of data for testing algorithms.
 }
 \usage{
-  generate.basic.worker(N.allworkers, N.worker, N.K.worker,
+  generate.basic.spmd(N.allspmds, N.spmd, N.K.spmd,
                         N, p, K, seed)
 }
 \arguments{
-  \item{N.allworkers}{a collection of sample sizes for all
-                      \eqn{S}{S} processors, i.e. a vector of
-                      length \eqn{S}{S}.}
-  \item{N.worker}{total sample size of given processor.}
-  \item{N.K.worker}{sample size of each clusters given processor, i.e.
-                    sum over \code{N.K.worker} is \code{N.worker},
-                    a vector of length
-                    \eqn{K}{K}.}
+  \item{N.allspmds}{a collection of sample sizes for all
+                    \eqn{S}{S} processors, i.e. a vector of
+                    length \eqn{S}{S}.}
+  \item{N.spmd}{total sample size of given processor.}
+  \item{N.K.spmd}{sample size of each clusters given processor, i.e.
+                  sum over \code{N.K.spmd} is \code{N.spmd},
+                  a vector of length
+                  \eqn{K}{K}.}
   \item{N}{total sample size across all \eqn{S}{S} processors, i.e.
-           sum over \code{N.worker} is \code{N}.}
-  \item{p}{dimension of data \code{\link{X.worker}},
-           i.e. \code{ncol(\link{X.worker})}.}
+           sum over \code{N.spmd} is \code{N}.}
+  \item{p}{dimension of data \code{\link{X.spmd}},
+           i.e. \code{ncol(\link{X.spmd})}.}
   \item{K}{number of clusters.}
   \item{seed}{a seed for random numbers and processor's rank will be added
               later.}
@@ -38,24 +38,24 @@
   including:
 \tabular{ll}{\code{K}               \tab number of clusters, as the input \cr
              \code{p}               \tab dimension of data
-                                         \code{\link{X.worker}},
+                                         \code{\link{X.spmd}},
                                          as the input \cr
              \code{N}               \tab total sample size, as the input \cr
-             \code{N.allworkers}    \tab a collection of sample sizes for all
+             \code{N.allspmds}      \tab a collection of sample sizes for all
                                          \eqn{S}{S} processors, as the input \cr
-             \code{N.worker}        \tab total sample size of given processor,
+             \code{N.spmd}          \tab total sample size of given processor,
                                          as the input \cr
-             \code{N.K.worker}      \tab sample size of each clusters given
+             \code{N.K.spmd}        \tab sample size of each clusters given
                                          processor, as the input \cr
              \code{seed}            \tab a seed for random numbers, as the
                                          input \cr
-             \code{\link{X.worker}} \tab generated data set with dimension with
-                                         dimension \code{N.worker * p} \cr
-             \code{\link{CLASS.worker}}
+             \code{\link{X.spmd}}   \tab generated data set with dimension with
+                                         dimension \code{N.spmd * p} \cr
+             \code{\link{CLASS.spmd}}
                                     \tab true id of each data, a vector of
-                                         length \code{N.worker}
+                                         length \code{N.spmd}
                                          and has values from 1 to \code{K} \cr
-             \code{N.CLASS.worker}  \tab true sample size of each clusters, a
+             \code{N.CLASS.spmd}    \tab true sample size of each clusters, a
                                          vector of length \code{K}
 }
 }
@@ -67,15 +67,15 @@
   Wei-Chen Chen \email{wccsnow@gmail.com} and George Ostrouchov.
 }
 \seealso{
-  \code{\link{em.step.worker}},
-  \code{\link{aecm.step.worker}},
-  \code{\link{apecm1.step.worker}}, \cr
-  \code{\link{apecm2.step.worker}}.
+  \code{\link{em.step.spmd}},
+  \code{\link{aecm.step.spmd}},
+  \code{\link{apecm1.step.spmd}}, \cr
+  \code{\link{apecm2.step.spmd}}.
 }
 \examples{
 \dontrun{
-# Examples can be found in the help pages of em.step.worker(),
-# aecm.step.worker(), apecm1.step.worker(), and apecm2.step.worker().
+# Examples can be found in the help pages of em.step.spmd(),
+# aecm.step.spmd(), apecm1.step.spmd(), and apecm2.step.spmd().
 }
 }
 \keyword{programming}
