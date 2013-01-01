@@ -18,10 +18,8 @@
 }
 \details{
   This utility function performs simple random sampling without replacement
-  for the original dataset \code{\link{X.spmd}}.
-  Different random seeds should
-  be set before calling this function. A easy way is to call for example
-  \code{\link[base]{set.seed}(123 + \link[Rmpi]{mpi.comm.rank}())}.
+  for the original dataset \code{\link{X.spmd}}. Different random seeds should
+  be set before calling this function.
 }
 \value{
   A list variable will be returned and containing:
@@ -40,8 +38,11 @@
   \code{N.spmd} for \code{ID.spmd}.
 }
 \references{
-  High Performance Statistical Computing Website:
+  High Performance Statistical Computing (HPSC) Website:
   \url{http://thirteen-01.stat.iastate.edu/snoweye/hpsc/}
+
+  Programming with Big Data in R Website:
+  \url{http://r-pbd.org/}
 }
 \author{
   Wei-Chen Chen \email{wccsnow@gmail.com} and George Ostrouchov.
@@ -52,21 +53,20 @@
 \examples{
 \dontrun{
 # Save code in a file "demo.r" and run in 4 processors by
-# > mpirun -np 4 Rscript demo.r
+# > mpiexec -np 4 Rscript demo.r
 
-### Setup mpi environment.
-library(Rmpi)
-invisible(mpi.comm.dup(0, 1))
+### Setup environment.
+library(pmclust, quiet = TRUE)
+comm.set.seed(123)
 
 ### Generate an example data.
-set.seed(123 + mpi.comm.rank())
 N.org.spmd <- 5000 + sample(1:1000, 1)
 ret.spmd <- assign.N.sample(total.sample = 5000, N.org.spmd)
-cat("Rank:", mpi.comm.rank(), " Size:", ret.spmd$N.spmd,
+cat("Rank:", comm.rank(), " Size:", ret.spmd$N.spmd,
     "\n", sep = "")
 
-### Quit Rmpi.
-mpi.quit()
+### Quit.
+finalize()
 }
 }
 \keyword{programming}

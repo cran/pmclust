@@ -1,13 +1,13 @@
-\name{em.onestep.spmd}
-\alias{em.onestep.spmd}
+\name{One Step of EM algorithm}
+\alias{em.onestep}
 \title{One EM Step for SPMD}
 \description{
   One EM step only for model-based clustering of finite mixture Gaussian
   models with unstructured dispersions.
-  This is a core function of \code{\link{em.step.spmd}}.
+  This is a core function of \code{\link{em.step}}.
 }
 \usage{
-  em.onestep.spmd(PARAM)
+  em.onestep(PARAM)
 }
 \arguments{
   \item{PARAM}{an original set of parameters generated
@@ -15,13 +15,13 @@
 }
 \details{
   A global variable called \code{\link{X.spmd}} should exist in the
-  \code{\link[base]{.GlobalEnv}}
+  \code{\link{.pmclustEnv}}
   environment, usually the working environment. The \code{\link{X.spmd}}
   is the data matrix to be clustered, and this matrix has a dimension
   \code{N.spmd} by \code{p}.
 
   The \code{PARAM} will be a local variable for the current iteration inside
-  \code{\link{em.onestep.spmd}},
+  \code{\link{em.onestep}},
   and this variable is a list containing all parameters related to models.
   This function also updates in the parameters by the EM algorithm, and
   return a new \code{\link{PARAM}} for the next iteration.
@@ -35,20 +35,23 @@
   for details.
 }
 \references{
-  High Performance Statistical Computing Website:
+  High Performance Statistical Computing (HPSC) Website:
   \url{http://thirteen-01.stat.iastate.edu/snoweye/hpsc/}
+
+  Programming with Big Data in R Website:
+  \url{http://r-pbd.org/}
 }
 \author{
   Wei-Chen Chen \email{wccsnow@gmail.com} and George Ostrouchov.
 }
 \seealso{
   \code{\link{set.global}},
-  \code{\link{e.step.spmd}},
-  \code{\link{m.step.spmd}}.
+  \code{\link{e.step}},
+  \code{\link{m.step}}.
 }
 \examples{
 \dontrun{
-# This is a core function for em.estep.spmd()
+# This is a core function for em.step()
 # see the source code for details.
 }
 }

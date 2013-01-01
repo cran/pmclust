@@ -20,22 +20,25 @@
   Summarized messages will print/cat on screen by default.
 }
 \references{
-  High Performance Statistical Computing Website:
+  High Performance Statistical Computing (HPSC) Website:
   \url{http://thirteen-01.stat.iastate.edu/snoweye/hpsc/}
+
+  Programming with Big Data in R Website:
+  \url{http://r-pbd.org/}
 }
 \author{
   Wei-Chen Chen \email{wccsnow@gmail.com} and George Ostrouchov.
 }
 \seealso{
-  \code{\link{em.step.spmd}},
-  \code{\link{aecm.step.spmd}},
-  \code{\link{apecm1.step.spmd}}, \cr
-  \code{\link{apecm2.step.spmd}}.
+  \code{\link{em.step}},
+  \code{\link{aecm.step}},
+  \code{\link{apecm.step}}, \cr
+  \code{\link{apecma.step}}.
 }
 \examples{
 \dontrun{
-# Examples can be found in the help pages of em.step.spmd(),
-# aecm.step.spmd(), apecm1.step.spmd(), and apecm2.step.spmd().
+# Examples can be found in the help pages of em.step(),
+# aecm.step(), apecm.step(), and apecma.step().
 }
 }
 \keyword{programming}

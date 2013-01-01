@@ -1,13 +1,13 @@
-\name{m.step.spmd}
-\alias{m.step.spmd}
+\name{One M-Step}
+\alias{m.step}
 \title{Compute One M-Step Based on Current Posterior Probabilities}
 \description{
   This function will perform one M-step based on current posterior
   probabilities.
-  This is a core function of \code{\link{em.onestep.spmd}}.
+  This is a core function of \code{\link{em.onestep}}.
 }
 \usage{
-  m.step.spmd(PARAM)
+  m.step(PARAM)
 }
 \arguments{
   \item{PARAM}{a set of parameters.}
@@ -24,20 +24,23 @@
   likelihood for the current iteration.
 }
 \references{
-  High Performance Statistical Computing Website:
+  High Performance Statistical Computing (HPSC) Website:
   \url{http://thirteen-01.stat.iastate.edu/snoweye/hpsc/}
+
+  Programming with Big Data in R Website:
+  \url{http://r-pbd.org/}
 }
 \author{
   Wei-Chen Chen \email{wccsnow@gmail.com} and George Ostrouchov.
 }
 \seealso{
   \code{\link{set.global}},
-  \code{\link{em.onestep.spmd}},
-  \code{\link{e.step.spmd}}.
+  \code{\link{em.onestep}},
+  \code{\link{e.step}}.
 }
 \examples{
 \dontrun{
-# This is a core function for em.onestep.spmd()
+# This is a core function for em.onestep()
 # see the source code for details.
 }
 }

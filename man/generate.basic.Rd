@@ -1,12 +1,11 @@
-\name{generate.basic.spmd}
-\alias{generate.basic.spmd}
-\title{Generate Basic Examples for Testing}
+\name{generate.basic}
+\alias{generate.basic}
+\title{Generate Examples for Testing}
 \description{
   This function will generate a small set of data for testing algorithms.
 }
 \usage{
-  generate.basic.spmd(N.allspmds, N.spmd, N.K.spmd,
-                        N, p, K, seed)
+  generate.basic(N.allspmds, N.spmd, N.K.spmd, N, p, K)
 }
 \arguments{
   \item{N.allspmds}{a collection of sample sizes for all
@@ -22,8 +21,6 @@
   \item{p}{dimension of data \code{\link{X.spmd}},
            i.e. \code{ncol(\link{X.spmd})}.}
   \item{K}{number of clusters.}
-  \item{seed}{a seed for random numbers and processor's rank will be added
-              later.}
 }
 \details{
   For all \eqn{S}{S} processors, this function will generate in total
@@ -47,8 +44,6 @@
                                          as the input \cr
              \code{N.K.spmd}        \tab sample size of each clusters given
                                          processor, as the input \cr
-             \code{seed}            \tab a seed for random numbers, as the
-                                         input \cr
              \code{\link{X.spmd}}   \tab generated data set with dimension with
                                          dimension \code{N.spmd * p} \cr
              \code{\link{CLASS.spmd}}
@@ -60,22 +55,22 @@
 }
 }
 \references{
-  High Performance Statistical Computing Website:
+  High Performance Statistical Computing (HPSC) Website:
   \url{http://thirteen-01.stat.iastate.edu/snoweye/hpsc/}
+
+  Programming with Big Data in R Website:
+  \url{http://r-pbd.org/}
 }
 \author{
   Wei-Chen Chen \email{wccsnow@gmail.com} and George Ostrouchov.
 }
 \seealso{
-  \code{\link{em.step.spmd}},
-  \code{\link{aecm.step.spmd}},
-  \code{\link{apecm1.step.spmd}}, \cr
-  \code{\link{apecm2.step.spmd}}.
+  \code{\link{generate.MixSim}}.
 }
 \examples{
 \dontrun{
-# Examples can be found in the help pages of em.step.spmd(),
-# aecm.step.spmd(), apecm1.step.spmd(), and apecm2.step.spmd().
+# Examples can be found in the help pages of em.step(),
+# aecm.step(), apecm.step(), and apecma.step().
 }
 }
 \keyword{programming}

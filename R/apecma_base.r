@@ -1,70 +1,67 @@
 ### This file contains major functions for EM iterations.
 
-### CM-step.
-cm.step.spmd.ETA <- function(PARAM){
+### E-step.
+apea.step.spmd.k <- function(PARAM, i.k, update.logL = TRUE){
+  logdmvnorm(PARAM, i.k)
+  update.expectation(PARAM, update.logL = update.logL)
+} # End of apea.step.spmd.k().
+
+### CM-step
+cm.step.spmd.ETA.MU.SIGMA.k <- function(PARAM, i.k){
   ### MLE For ETA
   PARAM$ETA <- .pmclustEnv$Z.colSums / sum(.pmclustEnv$Z.colSums)
   PARAM$log.ETA <- log(PARAM$ETA)
-  PARAM
-} # End of cm.step.spmd.ETA().
 
-cm.step.spmd.MU <- function(PARAM){
-  X.spmd <- get("X.spmd", envir = .GlobalEnv)
-
-  p <- PARAM$p
-
-  for(i.k in 1:PARAM$K){
-    ### MLE for MU
-    tmp.MU <- colSums(X.spmd * .pmclustEnv$Z.spmd[, i.k]) /
-              .pmclustEnv$Z.colSums[i.k]
-    PARAM$MU[, i.k] <- spmd.allreduce.double(tmp.MU, double(p), op = "sum")
-  }
+  ### MLE for MU and SIGMA
+  PARAM <- cm.step.spmd.MU.SIGMA.k(PARAM, i.k)
 
   PARAM
-} # End of cm.step.spmd.MU().
+} # End of cm.step.spmd.ETA.MU.SIGMA.k().
 
-cm.step.spmd.SIGMA <- function(PARAM){
+cm.step.spmd.MU.SIGMA.k <- function(PARAM, i.k){
   X.spmd <- get("X.spmd", envir = .GlobalEnv)
-
-  N.spmd <- nrow(X.spmd)
 
   p <- PARAM$p
   p.2 <- p * p
-  for(i.k in 1:PARAM$K){
-    if(PARAM$U.check[[i.k]]){
-      B <- W.plus.y(X.spmd, -PARAM$MU[, i.k], N.spmd, p) *
-           sqrt(.pmclustEnv$Z.spmd[, i.k] / .pmclustEnv$Z.colSums[i.k])
-      tmp.SIGMA <- crossprod(B)
-      tmp.SIGMA <- spmd.allreduce.double(tmp.SIGMA, double(p.2), op = "sum") 
-      dim(tmp.SIGMA) <- c(p, p)
 
-      tmp.U <- decompsigma(tmp.SIGMA)
-      PARAM$U.check[[i.k]] <- tmp.U$check
-      if(tmp.U$check){
-        PARAM$U[[i.k]] <- tmp.U$value
-        PARAM$SIGMA[[i.k]] <- tmp.SIGMA
-      }
-    } else{
-      if(.pmclustEnv$CONTROL$debug > 2){
-        comm.cat("  SIGMA[[", i.k, "]] is fixed.\n", sep = "")
-      }
+  ### MLE for MU
+  tmp.MU <- colSums(X.spmd * .pmclustEnv$Z.spmd[, i.k]) /
+            .pmclustEnv$Z.colSums[i.k]
+  PARAM$MU[, i.k] <- spmd.allreduce.double(tmp.MU, double(p), op = "sum")
+
+  ### MLE for SIGMA
+  if(PARAM$U.check[[i.k]]){
+    B <- W.plus.y(X.spmd, -PARAM$MU[, i.k], nrow(X.spmd), ncol(X.spmd)) *
+         sqrt(.pmclustEnv$Z.spmd[, i.k] / .pmclustEnv$Z.colSums[i.k])
+    tmp.SIGMA <- crossprod(B)
+    tmp.SIGMA <- spmd.allreduce.double(tmp.SIGMA, double(p.2), op = "sum") 
+    dim(tmp.SIGMA) <- c(p, p)
+
+    tmp.U <- decompsigma(tmp.SIGMA)
+    PARAM$U.check[[i.k]] <- tmp.U$check
+    if(tmp.U$check){
+      PARAM$U[[i.k]] <- tmp.U$value
+      PARAM$SIGMA[[i.k]] <- tmp.SIGMA
+    }
+  } else{
+    if(.pmclustEnv$CONTROL$debug > 2){
+      comm.cat("  SIGMA[[", i.k, "]] is fixed.\n", sep = "", quiet = TRUE)
     }
   }
 
   PARAM
-} # End of cm.step.spmd.SIGMA().
+} # End of cm.step.spmd.MU.SIGMA.k().
 
 
-### AECM-step.
-aecm.step.spmd <- function(PARAM.org){
-  .pmclustEnv$CHECK <- list(method = "aecm", i.iter = 0, abs.err = Inf,
+### APECMa-step.
+apecma.step.spmd <- function(PARAM.org){
+  .pmclustEnv$CHECK <- list(method = "apecma", i.iter = 0, abs.err = Inf,
                             rel.err = Inf, convergence = 0)
   i.iter <- 1
   PARAM.org$logL <- -.Machine$double.xmax
 
   ### For debugging.
-  if((!is.null(.pmclustEnv$CONTROL$save.log)) &&
-      .pmclustEnv$CONTROL$save.log){
+  if((!is.null(.pmclustEnv$CONTROL$save.log)) && .pmclustEnv$CONTROL$save.log){
     if(! exists("SAVE.iter", envir = .pmclustEnv)){
       .pmclustEnv$SAVE.param <- NULL
       .pmclustEnv$SAVE.iter <- NULL
@@ -80,9 +77,9 @@ aecm.step.spmd <- function(PARAM.org){
       time.start <- proc.time()
     }
 
-    PARAM.new <- try(aecm.onestep.spmd(PARAM.org))
+    PARAM.new <- try(apecma.onestep.spmd(PARAM.org))
     if(class(PARAM.new) == "try-error"){
-      comm.cat("Results of previous iterations are returned.\n", quiet = TRUE)
+      comm.cat("Results of previous iterations are returned.\n", quiet =TRUE)
       .pmclustEnv$CHECK$convergence <- 99
       PARAM.new <- PARAM.org
       break
@@ -115,36 +112,34 @@ aecm.step.spmd <- function(PARAM.org){
   }
 
   PARAM.new
-} # End of aecm.step.spmd().
+} # End of apecma.step.spmd().
 
-aecm.onestep.spmd <- function(PARAM){
-#  if(COMM.RANK == 0){
-#    Rprof(filename = "aecm.Rprof", append = TRUE)
+apecma.onestep.spmd <- function(PARAM){
+#  if(.pmclustEnv$COMM.RANK == 0){
+#    Rprof(filename = "apecma.Rprof", append = TRUE)
 #  }
 
-  PARAM <- cm.step.spmd.ETA(PARAM)
-  e.step.spmd(PARAM, update.logL = FALSE)
+  for(i.k in 1:PARAM$K){
+    PARAM <- cm.step.spmd.ETA.MU.SIGMA.k(PARAM, i.k)
+    apea.step.spmd.k(PARAM, i.k,
+                      update.logL = ifelse(i.k == PARAM$K, TRUE, FALSE))
+  }
 
-  PARAM <- cm.step.spmd.MU(PARAM)
-  e.step.spmd(PARAM, update.logL = FALSE)
-
-  PARAM <- cm.step.spmd.SIGMA(PARAM)
-  e.step.spmd(PARAM, update.logL = TRUE)
-
-#  if(COMM.RANK == 0){
+#  if(.pmclustEnv$COMM.RANK == 0){
 #    Rprof(NULL)
 #  }
 
   PARAM$logL <- logL.step()
 
   if(.pmclustEnv$CONTROL$debug > 0){
-    comm.cat(">>aecm.onestep: ", format(Sys.time(), "%H:%M:%S"),
+    comm.cat(">>apecma.onestep: ", format(Sys.time(), "%H:%M:%S"),
              ", iter: ", .pmclustEnv$CHECK$iter, ", logL: ",
                          sprintf("%-30.15f", PARAM$logL), "\n",
              sep = "", quiet = TRUE)
     if(.pmclustEnv$CONTROL$debug > 4){
       logL <- indep.logL(PARAM)
-      comm.cat("  >>indep.logL: ", sprintf("%-30.15f", logL), "\n", sep = "")
+      comm.cat("  >>indep.logL: ", sprintf("%-30.15f", logL), "\n",
+               sep = "", quiet = TRUE)
     }
     if(.pmclustEnv$CONTROL$debug > 20){
       mb.print(PARAM, .pmclustEnv$CHECK)
@@ -152,5 +147,5 @@ aecm.onestep.spmd <- function(PARAM){
   }
 
   PARAM
-} # End of aecm.onestep.spmd().
+} # End of apecma.onestep.spmd().
 

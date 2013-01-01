@@ -9,14 +9,13 @@
 SEXP W_plus_y_k(SEXP R_W, SEXP R_y, SEXP R_nrow, SEXP R_ncol, SEXP R_i_k){
 	SEXP R_Z;
 	double *C_Z, *C_W, *C_y;
-	int *C_i_k, *C_nrow, *C_ncol, i_k;
-	int i, j;
+	int *C_i_k, *C_nrow, i_k;
+	int i;
 
 	C_W = REAL(R_W);
 	C_y = REAL(R_y);
 	C_i_k = INTEGER(R_i_k);
 	C_nrow = INTEGER(R_nrow);
-	C_ncol = INTEGER(R_ncol);
 
         PROTECT(R_Z = allocVector(REALSXP, *C_nrow));
         C_Z = REAL(R_Z);

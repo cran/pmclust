@@ -23,25 +23,28 @@
 \value{
   An observed data log likelihood will be returned.
   This value can quickly compare with the log likelihood computed inside
-  \code{\link{em.onestep.spmd}}. Small difference is allowed, but
+  \code{\link{em.onestep}}. Small difference is allowed, but
   large difference indicates bugs of code or illness of data.
 }
 \references{
-  High Performance Statistical Computing Website:
+  High Performance Statistical Computing (HPSC) Website:
   \url{http://thirteen-01.stat.iastate.edu/snoweye/hpsc/}
+
+  Programming with Big Data in R Website:
+  \url{http://r-pbd.org/}
 }
 \author{
   Wei-Chen Chen \email{wccsnow@gmail.com} and George Ostrouchov.
 }
 \seealso{
   \code{\link{set.global}},
-  \code{\link{em.onestep.spmd}}.
+  \code{\link{em.onestep}}.
 }
 \examples{
 \dontrun{
-# This is a core function for em.estep.spmd()
+# This is a core function for em.estep()
 # see the source code for details.
-# Reset CONTROL$debug to turn on this function
+# Reset .pmclustEnv$CONTROL$debug to turn on this function
 # automatically for each EM iteration.
 }
 }

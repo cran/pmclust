@@ -1,5 +1,9 @@
 useDynLib(pmclust)
 
+import(methods, rlecuyer, pbdMPI, MASS, MixSim)
+
+# exportPattern("^[\\.]")
+
 export(
   ### Readme function.
   "readme",
@@ -8,34 +12,34 @@ export(
   "set.global",
 
   ### Initial functions.
-  "initial.em.spmd",
-  "initial.RndEM.spmd",
+  "initial.em",
+  "initial.RndEM",
   "assign.N.sample",
-  "initial.center.spmd",
+  "initial.center",
 
   ### EM methods.
-  "em.step.spmd",
-  "aecm.step.spmd",
-  "apecm1.step.spmd",
-  "apecm2.step.spmd",
-  "em.update.class.spmd",
+  "em.step",
+  "aecm.step",
+  "apecm.step",
+  "apecma.step",
+  "em.update.class",
   
   ### EM utility functions
-  "e.step.spmd",
-  "m.step.spmd",
+  "em.onestep",
+  "e.step",
+  "m.step",
   "indep.logL",
 
   ### K-means.
-  "kmeans.step.spmd",
-  "kmeans.update.class.spmd",
+  "kmeans.step",
+  "kmeans.update.class",
 
   ### Example functions
-  "generate.basic.spmd",
+  "generate.basic",
+  "generate.MixSim",
 
   ### Utility functions
   "get.N.CLASS",
-  "mb.print",
-  "catmpi",
-  "printmpi"
+  "mb.print"
 )
 

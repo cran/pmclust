@@ -1,14 +1,15 @@
-\name{.1.set.global}
+\name{Set Global Variables}
 \alias{set.global}
 \alias{X.spmd}
-\title{Set Global Variables According to X.spmd}
+\alias{.pmclustEnv}
+\title{Set Global Variables According to the global matrix X.spmd}
 \description{
-  This function will set several sets of variables globally according to
-  the \code{X.spmd}.
+  This function will set several sets of variables globally in the
+  environment \code{.pmclustEnv} according to the global matrix \code{X.spmd}.
 }
 \usage{
   set.global(K = 2, PARAM = NULL,
-      method = c("em", "aecm", "apecm1", "apecm2", "kmeans"),
+      method = c("em", "aecm", "apecm", "apecma", "kmeans"),
       RndEM.iter = 10)
 }
 \arguments{
@@ -30,25 +31,31 @@
   A new set of \code{\link{PARAM}} will be returned and several global
   variables will be set according to the data \code{X.spmd}.
 
+  Sets of global variables are store in the default environment
+  \code{.pmclustEnv}.
+
   Use \code{\link{readme}} to see all global variables set by this function.
 }
 \references{
-  High Performance Statistical Computing Website:
+  High Performance Statistical Computing (HPSC) Website:
   \url{http://thirteen-01.stat.iastate.edu/snoweye/hpsc/}
+
+  Programming with Big Data in R Website:
+  \url{http://r-pbd.org/}
 }
 \author{
   Wei-Chen Chen \email{wccsnow@gmail.com} and George Ostrouchov.
 }
 \seealso{
-  \code{\link{em.step.spmd}},
-  \code{\link{aecm.step.spmd}},
-  \code{\link{apecm1.step.spmd}}, \cr
-  \code{\link{apecm2.step.spmd}}.
+  \code{\link{em.step}},
+  \code{\link{aecm.step}},
+  \code{\link{apecm.step}}, \cr
+  \code{\link{apecma.step}}.
 }
 \examples{
 \dontrun{
-# Examples can be found in the help pages of em.step.spmd(),
-# aecm.step.spmd(), apecm1.step.spmd(), and apecm2.step.spmd().
+# Examples can be found in the help pages of em.step(),
+# aecm.step(), apecm.step(), and apecma.step().
 }
 }
 \keyword{global variables}

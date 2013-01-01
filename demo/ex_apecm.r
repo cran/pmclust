@@ -14,9 +14,9 @@ X.spmd <- data.spmd$X.spmd
 
 ### Run clustering.
 PARAM.org <- set.global(K = K)
-PARAM.org <- initial.center(PARAM.org)
-PARAM.new <- kmeans.step(PARAM.org)
-kmeans.update.class()
+PARAM.org <- initial.em(PARAM.org)
+PARAM.new <- apecm.step(PARAM.org)
+em.update.class()
 mb.print(PARAM.new, .pmclustEnv$CHECK)
 
 ### Get results.

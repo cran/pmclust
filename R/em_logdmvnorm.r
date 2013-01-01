@@ -1,7 +1,9 @@
 ### This file contains functions for log density of MVN.
-### These will majorly update W.spmd.
+### These will majorly update .pmclustEnv$W.spmd.
 
 logdmvnorm <- function(PARAM, i.k){
+  X.spmd <- get("X.spmd", envir = .GlobalEnv)
+
 #  for(i.k in 1:PARAM$K){
 #    U <- chol(PARAM$SIGMA[[i.k]])
     U <- PARAM$U[[i.k]]
@@ -12,7 +14,8 @@ logdmvnorm <- function(PARAM, i.k){
     B <- W.plus.y(X.spmd, -PARAM$MU[, i.k], nrow(X.spmd), ncol(X.spmd))
     B <- B %*% backsolve(U, diag(PARAM$p))
     distval <- rowSums(B * B)
-    W.spmd[, i.k] <<- -(p.times.logtwopi + logdet + distval) * 0.5
+    .pmclustEnv$W.spmd[, i.k] <- -(.pmclustEnv$p.times.logtwopi + logdet +
+                                   distval) * 0.5
 #  }
 } # End of logdmvnorm().
 

@@ -5,7 +5,7 @@ decompsigma <- function(SIGMA){
   U <- chol(SIGMA)
   u <- diag(U)
   U.check <- TRUE
-  if(any(u < CONTROL$U.min | u > CONTROL$U.max)){
+  if(any(u < .pmclustEnv$CONTROL$U.min | u > .pmclustEnv$CONTROL$U.max)){
     U.check <- FALSE
   }
 
