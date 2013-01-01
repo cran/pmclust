@@ -1,10 +1,7 @@
 ### This file contains a simple data generation.
 
 ### N.K.spmd: integer[K], number of elements of each cluster.
-generate.basic.spmd <- function(N.allspmds, N.spmd, N.K.spmd,
-    N, p, K, seed){
-  set.seed(seed)
-
+generate.basic.spmd <- function(N.allspmds, N.spmd, N.K.spmd, N, p, K){
   data.simu <- NULL
   data.class <- NULL
   data.n.class <- rep(0, K)
@@ -25,9 +22,10 @@ generate.basic.spmd <- function(N.allspmds, N.spmd, N.K.spmd,
   }
 
   ret <- list(K = K, p = p, N = N, N.allspmds = N.allspmds,
-              N.spmd = N.spmd, N.K.spmd = N.K.spmd, seed = seed,
+              N.spmd = N.spmd, N.K.spmd = N.K.spmd,
               X.spmd = data.simu, CLASS.spmd = data.class,
               N.CLASS.spmd = data.n.class)
   ret
 } # End of generate.basic.spmd().
 
+generate.basic <- generate.basic.spmd

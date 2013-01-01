@@ -2,6 +2,8 @@
 ### Note that Inf, -Inf, NA, NaN is drop from the summation.
 
 indep.logL <- function(PARAM){
+  X.spmd <- get("X.spmd", envir = .GlobalEnv)
+
   nrow <- nrow(X.spmd)
   ncol <- ncol(X.spmd)
 
@@ -22,19 +24,19 @@ indep.logL <- function(PARAM){
 
   ret <- rowSums(exp(ret))
 
-  if(CONTROL$debug > 10){
-    catmpi("  >>Not finite: ", sep = "")
-    for(i.rank in 0:(COMM.SIZE - 1)){
-      if(i.rank == COMM.RANK){
-        cat(COMM.RANK, ":", sum(!is.finite(ret)), " ", sep = "")
+  if(.pmclustEnv$CONTROL$debug > 10){
+    comm.cat("  >>Not finite: ", sep = "", quiet = TRUE)
+    for(i.rank in 0:(.pmclustEnv$COMM.SIZE - 1)){
+      if(i.rank == .pmclustEnv$COMM.RANK){
+        cat(.pmclustEnv$COMM.RANK, ":", sum(!is.finite(ret)), " ", sep = "")
       }
-      invisible(mpi.barrier())
+      barrier()
     }
-    catmpi("\n", sep = "")
+    comm.cat("\n", sep = "", quiet = TRUE)
   }
 
   ret <- sum(log(ret[is.finite(ret)]))
-  ret <- mpi.allreduce(ret, type = 2, op = "sum")
+  ret <- spmd.allreduce.double(ret, double(1), op = "sum")
   ret
 } # End of indep.logL().
 

@@ -10,11 +10,11 @@ assign.N.sample <- function(total.sample = 5000, N.org.spmd){
   #   N.new.spmd <- N.new.spmd - nrow(var.table.spmd)
   #   var.table.spmd <- var.table.spmd[order(var.table.spmd$id),]
   # }
-  my.size <- mpi.comm.size()
-  N.org.allspmds <- mpi.allgather(as.integer(N.org.spmd), type = 1,
-                                    integer(my.size))
-  N.new.allspmds <- mpi.allgather(as.integer(N.new.spmd), type = 1,
-                                    integer(my.size))
+  my.size <- spmd.comm.size()
+  N.org.allspmds <- spmd.allgather.integer(as.integer(N.org.spmd),
+                                           integer(my.size))
+  N.new.allspmds <- spmd.allgather.integer(as.integer(N.new.spmd),
+                                           integer(my.size))
   if(any(N.new.allspmds <= 0)){
     stop("N.org.spmd is too small.")
   }
@@ -39,7 +39,7 @@ assign.N.sample <- function(total.sample = 5000, N.org.spmd){
         N.sample.allspmds[(my.size - remainder + 1):my.size] + 1 
     }
 
-    N.sample.spmd <- N.sample.allspmds[mpi.comm.rank() + 1]
+    N.sample.spmd <- N.sample.allspmds[spmd.comm.rank() + 1]
 
     ### Check for SS.
     # if(!is.null(var.table.spmd)){

@@ -8,14 +8,15 @@ estimate.MU <- function(X.spmd, CLASS.spmd, K){
 
   for(i.k in 1:K){
     tmp.id <- which(CLASS.spmd == i.k)
-    tmp.n.id <- mpi.allreduce(as.double(length(tmp.id)), type = 2, op = "sum")
+    tmp.n.id <- spmd.allreduce.double(as.double(length(tmp.id)),
+                                      double(1), op = "sum")
 
     if(length(tmp.id) > 0){
       tmp.MU <- colSums(X.spmd[tmp.id,])
     } else{
       tmp.MU <- rep(0.0, p)
     }
-    tmp.MU <- mpi.allreduce(tmp.MU, type = 2, op = "sum")
+    tmp.MU <- spmd.allreduce.double(tmp.MU, double(p), op = "sum")
 
     MU.CLASS[, i.k] <- tmp.MU / tmp.n.id
   }
@@ -32,11 +33,13 @@ estimate.MU <- function(X.spmd, CLASS.spmd, K){
 
 estimate.SIGMA <- function(X.spmd, MU, CLASS.spmd, K){
   p <- ncol(X.spmd)
+  p.2 <- p * p
   SIGMA.CLASS <- NULL
 
   for(i.k in 1:K){  
     tmp.id <- which(CLASS.spmd == i.k)
-    tmp.n.id <- mpi.allreduce(as.double(length(tmp.id)), type = 2, op = "sum")
+    tmp.n.id <- spmd.allreduce.double(as.double(length(tmp.id)),
+                                      double(1), op = "sum")
 
     if(length(tmp.id) == 1){
       tmp.X.spmd <- X.spmd[tmp.id,] - MU[, i.k]
@@ -55,9 +58,9 @@ estimate.SIGMA <- function(X.spmd, MU, CLASS.spmd, K){
                                length(tmp.id), p)
       tmp.SIGMA <- crossprod(tmp.X.spmd)
     } else{
-      tmp.SIGMA <- rep(0.0, p * p)
+      tmp.SIGMA <- rep(0.0, p.2)
     }
-    tmp.SIGMA <- mpi.allreduce(tmp.SIGMA, type = 2, op = "sum")
+    tmp.SIGMA <- spmd.allreduce.double(tmp.SIGMA, double(p.2), op = "sum")
 
     SIGMA.CLASS[[i.k]] <- matrix(tmp.SIGMA / (tmp.n.id - 1), ncol = p)
   }
@@ -68,8 +71,8 @@ estimate.SIGMA <- function(X.spmd, MU, CLASS.spmd, K){
 
 ### This function collects N.CLASS
 get.N.CLASS <- function(K){
-  tmp.n.class <- tabulate(CLASS.spmd, nbins = K)
-  mpi.allreduce(as.integer(tmp.n.class), type = 1, op = "sum")
+  tmp.n.class <- tabulate(.pmclustEnv$CLASS.spmd, nbins = K)
+  spmd.allreduce.integer(as.integer(tmp.n.class), integer(K), op = "sum")
 } # End of get.N.CLASS().
 
 

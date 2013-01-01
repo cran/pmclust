@@ -1,4 +1,4 @@
-\name{.3.CONTROL}
+\name{Set of CONTROL}
 \alias{CONTROL}
 \docType{data}
 \title{A Set of Controls in Model-Based Clustering.}
@@ -10,7 +10,7 @@
   A list variable contains several parameters for computing.
 }
 \details{
-  The elements of \code{CONTROL} are
+  The elements of \code{.pmclustEnv$CONTROL} are
 \tabular{ll}{\code{max.iter}   \tab maximum number of iterations (1000) \cr
              \code{abs.err}    \tab absolute error for convergence (1e-4) \cr
              \code{rel.err}    \tab relative error for convergence (1e-6) \cr
@@ -44,11 +44,14 @@
   the degenerate and inflated components. Usually, this is a sign of
   overestimate the number of components \code{K}, or the initialization
   do not provide good estimations for parameters.
-  See \code{\link{e.step.spmd}} for more information about computing.
+  See \code{\link{e.step}} for more information about computing.
 }
 \references{
-  High Performance Statistical Computing Website:
+  High Performance Statistical Computing (HPSC) Website:
   \url{http://thirteen-01.stat.iastate.edu/snoweye/hpsc/}
+
+  Programming with Big Data in R Website:
+  \url{http://r-pbd.org/}
 }
 \author{
   Wei-Chen Chen \email{wccsnow@gmail.com} and George Ostrouchov.

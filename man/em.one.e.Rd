@@ -1,12 +1,12 @@
-\name{e.step.spmd}
-\alias{e.step.spmd}
+\name{One E-Step}
+\alias{e.step}
 \title{Compute One E-step and Log Likelihood Based on Current Parameters}
 \description{
   This function will perform one E-step based on current parameters.
-  This is a core function of \code{\link{em.onestep.spmd}}.
+  This is a core function of \code{\link{em.onestep}}.
 }
 \usage{
-  e.step.spmd(PARAM, update.logL = TRUE)
+  e.step(PARAM, update.logL = TRUE)
 }
 \arguments{
   \item{PARAM}{a set of parameters.}
@@ -42,20 +42,23 @@
   See \code{\link{CONTROL}} for details about constrains on E- and M-steps.
 }
 \references{
-  High Performance Statistical Computing Website:
+  High Performance Statistical Computing (HPSC) Website:
   \url{http://thirteen-01.stat.iastate.edu/snoweye/hpsc/}
+
+  Programming with Big Data in R Website:
+  \url{http://r-pbd.org/}
 }
 \author{
   Wei-Chen Chen \email{wccsnow@gmail.com} and George Ostrouchov.
 }
 \seealso{
   \code{\link{set.global}},
-  \code{\link{em.onestep.spmd}},
-  \code{\link{m.step.spmd}}.
+  \code{\link{em.onestep}},
+  \code{\link{m.step}}.
 }
 \examples{
 \dontrun{
-# This is a core function for em.onestep.spmd()
+# This is a core function for em.onestep()
 # see the source code for details.
 }
 }
