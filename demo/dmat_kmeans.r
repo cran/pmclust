@@ -1,5 +1,6 @@
 ### Setup mpi environment.
 library(pmclust, quiet = TRUE)
+init.grid()
 comm.set.seed(123, diff = TRUE)
 
 ### Generate an example data.
@@ -10,17 +11,17 @@ N <- 5000 * comm.size()
 p <- 2
 K <- 2
 data.spmd <- generate.basic(N.allspmds, N.spmd, N.K.spmd, N, p, K)
-X.spmd <- data.spmd$X.spmd
+X.dmat <- as.dmat(data.spmd$X.spmd)
 
 ### Run clustering.
-PARAM.org <- set.global(K = K)
-PARAM.org <- initial.center(PARAM.org)
-PARAM.new <- kmeans.step(PARAM.org)
-kmeans.update.class()
+PARAM.org <- set.global.dmat(K = K)
+PARAM.org <- initial.center.dmat(PARAM.org)
+PARAM.new <- kmeans.step.dmat(PARAM.org)
+kmeans.update.class.dmat()
 mb.print(PARAM.new, .pmclustEnv$CHECK)
 
 ### Get results.
-N.CLASS <- get.N.CLASS(K)
+N.CLASS <- get.N.CLASS.dmat(K)
 comm.cat("# of class:", N.CLASS, "\n")
 
 ### Print run time and quit Rmpi.
