@@ -12,18 +12,27 @@
 \alias{Z.colSums}
 \alias{Z.spmd}
 \alias{p.times.logtwopi}
+\alias{readme.dmat}
+\alias{CLASS.dmat}
+\alias{U.dmat}
+\alias{W.dmat}
+\alias{W.dmat.rowSums}
+\alias{Z.dmat}
 \title{Read Me First Function}
 \description{
   This function print the annotations of all variables used in this package.
 }
 \usage{
   readme()
+  readme.dmat()
 }
 \details{
   This package is optimized in the way by pre-specifying several global
   variables in \code{.pmclustEnv}.
   These variables will be overwrote by EM algorithms. Users should
   use these names to access the results and utilize them with cautions.
+
+  \code{readme.dmat} is a ddmatrix version of \code{readme}.
 }
 \value{
   A readme message will print on screen by default and explain the global
@@ -34,10 +43,10 @@
                                           from 1 to K \cr
              \code{COMM.RANK}        \tab rank of current processor, obtained
                                           from
-                                          \code{\link[pbdMPI]{comm.rank}}\cr
+                                          \code{comm.rank} of pbdMPI\cr
              \code{COMM.SIZE}        \tab total processors in MPI world,
                                           obtained from
-                                          \code{\link[pbdMPI]{comm.size}}\cr
+                                          \code{comm.size} of pbdMPI\cr
              \code{\link{CONTROL}}   \tab controls for EM iterations \cr
              \code{\link{PARAM}}     \tab set or parameters \cr
              \code{SAVE.param}       \tab (debug only)
@@ -78,11 +87,13 @@
   Wei-Chen Chen \email{wccsnow@gmail.com} and George Ostrouchov.
 }
 \seealso{
-  \code{\link{set.global}}.
+  \code{\link{set.global}},
+  \code{\link{set.global.dmat}}.
 }
 \examples{
 \dontrun{
 readme()
+readme.dmat()
 }
 }
 \keyword{global variables}

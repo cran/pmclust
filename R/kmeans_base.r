@@ -10,6 +10,7 @@ kmeans.e.step.spmd <- function(PARAM){
     B <- W.plus.y(X.spmd, -PARAM$MU[, i.k], nrow, ncol)
     .pmclustEnv$Z.spmd[, i.k] <- sqrt(rowSums(B * B))
   }
+  invisible()
 } # End of kmeans.e.step.spmd().
 
 kmeans.m.step.spmd <- function(PARAM){
@@ -33,13 +34,13 @@ kmeans.m.step.spmd <- function(PARAM){
   PARAM
 } # End of kmeans.m.step.spmd().
 
-kmeans.logL.step <- function(){
-  tmp <- apply(.pmclustEnv$Z.spmd, 1, which.min)
+kmeans.logL.step.spmd <- function(){
+  tmp <- unlist(apply(.pmclustEnv$Z.spmd, 1, which.min))
   tmp.diff <- sum(.pmclustEnv$CLASS.spmd != tmp)
 
   .pmclustEnv$CLASS.spmd <- tmp
   spmd.allreduce.integer(as.integer(tmp.diff), integer(1), op = "sum")
-} # End of kmeans.logL.step().
+} # End of kmeans.logL.step.spmd().
 
 check.kmeans.convergence <- function(PARAM.org, PARAM.new, i.iter){
     abs.err <- PARAM.new$logL
@@ -132,7 +133,7 @@ kmeans.onestep.spmd <- function(PARAM){
 #    Rprof(NULL)
 #  }
 
-  PARAM$logL <- kmeans.logL.step()
+  PARAM$logL <- kmeans.logL.step.spmd()
 
   if(.pmclustEnv$CONTROL$debug > 0){
     comm.cat(">>kmeans.onestep: ", format(Sys.time(), "%H:%M:%S"),
@@ -149,6 +150,7 @@ kmeans.onestep.spmd <- function(PARAM){
 
 
 kmeans.update.class.spmd <- function(){
-  .pmclustEnv$CLASS.spmd <- apply(.pmclustEnv$Z.spmd, 1, which.min)
+  .pmclustEnv$CLASS.spmd <- unlist(apply(.pmclustEnv$Z.spmd, 1, which.min))
+  invisible()
 } # End of kmeans.update.class.spmd().
 
