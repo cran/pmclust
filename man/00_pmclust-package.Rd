@@ -24,14 +24,15 @@
   LazyLoad: \tab yes\cr
 }
 
-  The main function is \code{\link{em.step}} implementing the
+  The main function is \code{\link{pmclust}} implementing the
   parallel EM algorithm for mixture multivariate Gaussian models
   with unstructured dispersions. This function groups a data matrix
-  \code{\link{X.spmd}} into \code{K} clusters where \code{\link{X.spmd}} is
-  potentially huge and taken from the global environment
-  \code{\link{.pmclustEnv}}.
+  \code{\link{X.gbd}} or \code{\link{X.spmd}}
+  into \code{K} clusters where \code{\link{X.gbd}} or \code{\link{X.spmd}} is
+  potentially huge and taken from the global environment \code{.GlobalEnv}
+  or \code{\link{.pmclustEnv}}.
 
-  Other main functions \code{\link{aecm.step}},
+  Other main functions \code{\link{em.step}}, \code{\link{aecm.step}},
   \code{\link{apecm.step}}, and
   \code{\link{apecma.step}} may provide better performance than the
   \code{\link{em.step}} in terms of computing time and convergent
@@ -55,8 +56,8 @@
   \bold{4}, 567-578.
 
   Chen, W.-C., Ostrouchov, G., Pugmire, D., Prabhat, M., and Wehner, M. (2013)
-  \dQuote{Exploring Multivariate Relationships in Large Spatio-Temporal
-          Data with Parallel Model-Based Clustering and Scalable Graphics},
+  \dQuote{A Parallel EM Algorithm for Model-Based Clustering with
+          Application to Explore Large Spatio-Temporal Data},
   \emph{Technometrics},
   (revision).
 
@@ -84,18 +85,26 @@
   \code{\link{apecm.step}}, \cr
   \code{\link{apecma.step}},
   \code{\link{kmeans.step}}. \cr
-  \code{\link{kmeans.step.dmat}}.
+  \code{\link{em.step.dmat}},
+  \code{\link{kmeans.step.dmat}}. \cr
 }
 \examples{
 \dontrun{
 ### Under command mode, run the demo with 2 processors by
 ### (Use Rscript.exe for windows system)
+mpiexec -np 2 Rscript -e 'demo(gbd_em,"pmclust",ask=F,echo=F)'
+mpiexec -np 2 Rscript -e 'demo(gbd_aecm,"pmclust",ask=F,echo=F)'
+mpiexec -np 2 Rscript -e 'demo(gbd_apecm,"pmclust",ask=F,echo=F)'
+mpiexec -np 2 Rscript -e 'demo(gbd_apecma,"pmclust",ask=F,echo=F)'
+mpiexec -np 2 Rscript -e 'demo(gbd_kmeans,"pmclust",ask=F,echo=F)'
+
 mpiexec -np 2 Rscript -e 'demo(ex_em,"pmclust",ask=F,echo=F)'
 mpiexec -np 2 Rscript -e 'demo(ex_aecm,"pmclust",ask=F,echo=F)'
 mpiexec -np 2 Rscript -e 'demo(ex_apecm,"pmclust",ask=F,echo=F)'
 mpiexec -np 2 Rscript -e 'demo(ex_apecma,"pmclust",ask=F,echo=F)'
 mpiexec -np 2 Rscript -e 'demo(ex_kmeans,"pmclust",ask=F,echo=F)'
 
+mpiexec -np 2 Rscript -e 'demo(dmat_em,"pmclust",ask=F,echo=F)'
 mpiexec -np 2 Rscript -e 'demo(dmat_kmeans,"pmclust",ask=F,echo=F)'
 }
 }

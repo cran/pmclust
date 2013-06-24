@@ -4,13 +4,14 @@
 \alias{apecm.step}
 \alias{apecma.step}
 \alias{kmeans.step}
+\alias{em.step.dmat}
 \alias{kmeans.step.dmat}
-\title{EM-like Steps for SPMD}
+\title{EM-like Steps for GBD}
 \description{
   The EM-like algorithm for model-based clustering of finite mixture Gaussian
   models with unstructured dispersions.
 
-  \code{*.dmat}'s are ddmatrix versions.
+  \code{*.dmat}'s are \code{ddmatrix} versions.
 }
 \usage{
   em.step(PARAM.org)
@@ -18,6 +19,8 @@
   apecm.step(PARAM.org)
   apecma.step(PARAM.org)
   kmeans.step(PARAM.org)
+
+  em.step.dmat(PARAM.org)
   kmeans.step.dmat(PARAM.org)
 }
 \arguments{
@@ -60,8 +63,8 @@
   \bold{4}, 567-578.
 
   Chen, W.-C., Ostrouchov, G., Pugmire, D., Prabhat, M., and Wehner, M. (2013)
-  \dQuote{Exploring Multivariate Relationships in Large Spatio-Temporal
-          Data with Parallel Model-Based Clustering and Scalable Graphics},
+  \dQuote{A Parallel EM Algorithm for Model-Based Clustering with
+          Application to Explore Large Spatio-Temporal Data},
   \emph{Technometrics},
   (revision).
 
