@@ -1,8 +1,19 @@
 ### This function initializes global variables.
-set.global.dmat <- function(K = 2, PARAM = NULL,
-    method = c("kmeans.dmat"),
+set.global.dmat <- function(K = 2, X.dmat = NULL, PARAM = NULL,
+    algorithm = c("em.dmat", "kmeans.dmat"),
     RndEM.iter = 10){
-  X.dmat <- get("X.dmat", envir = .GlobalEnv)
+  if(is.null(X.dmat)){
+    if(exists("X.dmat", envir = .pmclustEnv)){
+      X.dmat <- get("X.dmat", envir = .pmclustEnv)
+    } else{
+      if(! exists("X.dmat", envir = .GlobalEnv)){
+        comm.stop("A global X.dmat does not exist.")
+      }
+    }
+  } else{
+    .pmclustEnv$X.dmat <- X.dmat
+  }
+
   if(! is.ddmatrix(X.dmat)){
     stop("X.dmat is not a ddmatrix.")
   }
@@ -20,7 +31,7 @@ set.global.dmat <- function(K = 2, PARAM = NULL,
                   U.check = rep(TRUE, K),
                   logL = NULL,
                   min.N.CLASS = min(c((p + 1) * p * 0.5 + 1, N / K * 0.2)))
-    PARAM$ETA <- rep(1/K, K)
+    PARAM$ETA <- rep(1 / K, K)
     PARAM$log.ETA <- rep(-log(K), K) 
     PARAM$MU <- matrix(0, p, K)
     PARAM$SIGMA <- rep(list(diag(1.0, p)), K)
@@ -30,12 +41,8 @@ set.global.dmat <- function(K = 2, PARAM = NULL,
   }
 
   ### Set global storages.
-  .pmclustEnv$CONTROL <- list(max.iter = 1000, abs.err = 1e-4, rel.err = 1e-6,
-                              debug = 1, RndEM.iter = RndEM.iter,
-                              exp.min = log(.Machine$double.xmin),
-                              exp.max = log(.Machine$double.xmax),
-                              U.max = 1e+4,
-                              U.min = 1e-6)
+  .pmclustEnv$CONTROL <- .PMC.CT$CONTROL
+  .pmclustEnv$CONTROL$RndEM.iter <- RndEM.iter
 
   .pmclustEnv$COMM.SIZE <- spmd.comm.size()
   .pmclustEnv$COMM.RANK <- spmd.comm.rank()
@@ -43,16 +50,18 @@ set.global.dmat <- function(K = 2, PARAM = NULL,
   .pmclustEnv$p.times.logtwopi <- p * log(2 * pi)
 
   .pmclustEnv$Z.dmat <- ddmatrix(0, N, K)
-  .pmclustEnv$Z.colSums <- colSums(.pmclustEnv$Z.dmat)
+  .pmclustEnv$Z.colSums <- as.vector(colSums(.pmclustEnv$Z.dmat))
 
   .pmclustEnv$W.dmat <- ddmatrix(0, N, K)
-  .pmclustEnv$W.dmat.rowSums <- rowSums(.pmclustEnv$W.dmat)
+  .pmclustEnv$W.rowSums <- as.vector(rowSums(.pmclustEnv$W.dmat))
 
   .pmclustEnv$U.dmat <- ddmatrix(0, N, K)
 
-  .pmclustEnv$CLASS.dmat <- ddmatrix(0, N, 1)
+  # .pmclustEnv$CLASS.dmat <- ddmatrix(0, N, 1)
+  .pmclustEnv$CLASS <- rep(0, N)	# This is not a ddmatrix.
 
-  .pmclustEnv$CHECK <- list(method = method[1], i.iter = 0, abs.err = Inf,
+  .pmclustEnv$CHECK <- list(algorithm = algorithm[1],
+                            i.iter = 0, abs.err = Inf,
                             rel.err = Inf, convergence = 0)
 
   ### For semi-supervised clustering.

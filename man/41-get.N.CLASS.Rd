@@ -1,20 +1,27 @@
 \name{get.N.CLASS}
 \alias{get.N.CLASS}
 \alias{get.N.CLASS.dmat}
+\alias{get.CLASS}
 \title{Obtain Total Elements for Every Clusters}
 \description{
   This function will collect the total elements for every clusters
   from all processors that the all reduced calls with the sum operation
   will be performed.
 
-  \code{get.N.CLASS.dmat} is a ddmatrix version of \code{get.N.CLASS}.
+  \code{get.N.CLASS.dmat} is a \code{ddmatrix} version of \code{get.N.CLASS}.
+
+  The \code{get.CLASS} returns class ids.
 }
 \usage{
   get.N.CLASS(K)
+
   get.N.CLASS.dmat(K)
+
+  get.CLASS(PARAM)
 }
 \arguments{
   \item{K}{the total number of clusters.}
+  \item{PARAM}{a set of parameters.}
 }
 \details{
   The final results are distributed in all processors including the total
