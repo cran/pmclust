@@ -1,3 +1,9 @@
+2014-02-02: Ver. 0.1-6
+  * Add I/O demo to read data and dump clustering results.
+
+2013-07-03: Ver. 0.1-6
+  * Move inst/doc/vignettes/ to vignettes/.
+
 2013-07-02: Ver. 0.1-5
   * Add high-level functions "pmclust" and "pkmeans".
   * Add man page and vignettes.
