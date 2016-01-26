@@ -1,8 +1,8 @@
 %\VignetteIndexEntry{pmclust-guide}
 
-\documentclass[article,shortnames,nojss]{pmclust-include/jss}
+\documentclass[article,shortnames,nojss]{jss}
 
-\newcommand{\pmclustversion}{0.1-6}
+\newcommand{\pmclustversion}{0.1-7}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -12,27 +12,29 @@
 \author{
 \begin{minipage}{6in}
 \centering
-Wei-Chen Chen$^1$ and George Ostrouchov$^{1,2}$
+Wei-Chen Chen$^1$ and George Ostrouchov$^{2,3}$
 \end{minipage}
 \\
 \\
-$^1$Department of Ecology and Evolutionary Biology, \\
+$^1$pbdR Core Team \\
+\\
+$^2$National Institute for Computational Sciences, \\
 University of Tennessee, \\
 Knoxville, TN, USA \\
 \\
-$^2$Remote Data Analysis and Visualization Center,\\
-University of Tennessee, \\
-Knoxville, TN, USA \\
+$^3$Computer Science and Mathematics Division, \\
+Oak Ridge National Laboratory, \\
+Oak Ridge, TN, USA
 }
 %\\ \today}
-\title{A Quick Guide for the \pkg{pmclust} Package {\small (Ver. \pmclustversion)}}
+\title{A Quick Guide for the \pkg{pmclust} Package}
 %\\
 %\vspace{0.2cm} \large (Based on Version 0.1-2)}
 
 %% for pretty printing and a nice hypersummary also set:
 \Plainauthor{Wei-Chen Chen, George Ostrouchov} %% comma-separated
-\Plaintitle{Quick Guide for pmclust (Ver. \pmclustversion)} %% without formatting
-\Shorttitle{Quick Guide for pmclust (Ver. \pmclustversion)} %% a short title (if necessary)
+\Plaintitle{Quick Guide for pmclust} %% without formatting
+\Shorttitle{Quick Guide for pmclust} %% a short title (if necessary)
 
 %% an abstract and keywords
 %\Abstract{
@@ -67,7 +69,7 @@ Knoxville, TN, USA \\
 
 %% end of declarations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+\input{./pmclust-include/my_jss.cls}
 \input{./pmclust-include/00-preamble}
 
 \begin{document}
